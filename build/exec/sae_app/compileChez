@@ -1,0 +1,1 @@
+(parameterize ([optimize-level 3] [compile-file-message #f]) (compile-program "/Users/rustamismailov/git/sae/build/exec/sae_app/sae.ss"))

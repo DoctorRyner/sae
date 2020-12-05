@@ -1,0 +1,7 @@
+package sae-0_0_1
+
+sourcedir = "src"
+modules = Config
+        , Main
+        , Parser
+        , Data.Yaml
