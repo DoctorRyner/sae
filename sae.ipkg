@@ -1,5 +1,6 @@
 package sae-0_0_1
 
+depends = contrib
 sourcedir = "src"
 modules = Config
         , Main
