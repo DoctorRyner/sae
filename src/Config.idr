@@ -56,16 +56,18 @@ getDirs path = case !(openDir path) of
 export
 modulesFromSourcedir : String -> IO (List String)
 modulesFromSourcedir path = do
-  changeDir path
-  mbDir <- currentDir
-  let dir = fromMaybe "/" mbDir
-  files <- getDirs dir
-  let idrisFiles = filter (isSuffixOf ".idr") files
-  let restFiles = filter (not . isSuffixOf ".idr") files
-  idrisFilesContents <- traverse readFile idrisFiles
-  let modules = map fst $ rights $ map (parse moduleDecl) $ rights idrisFilesContents
-  if files == []
+  if not !(changeDir path)
     then pure []
     else do
-      modulesBunch <- traverse modulesFromSourcedir restFiles
-      pure $ modules ++ concat modulesBunch
+      mbDir <-currentDir
+      let dir = fromMaybe "/" mbDir
+      files <- getDirs dir
+      let idrisFiles = filter (isSuffixOf ".idr") files
+      let restFiles = filter (not . isSuffixOf ".idr") files
+      idrisFilesContents <- traverse readFile idrisFiles
+      let modules = map fst $ rights $ map (parse moduleDecl) $ rights idrisFilesContents
+      if files == []
+        then pure []
+        else do
+          modulesBunch <- traverse modulesFromSourcedir restFiles
+          pure $ modules ++ concat modulesBunch
