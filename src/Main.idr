@@ -17,7 +17,7 @@ generateIpkg baseDir cfg = do
     Right _  => putStrLn $ "Generated: " ++ ipkgPath
 
 loadConfig : String -> Either FileError String -> IO ()
-loadConfig _ (Left  err) = putStrLn $ show err ++ ": Eq.yml"
+loadConfig _ (Left  err) = putStrLn $ show err ++ ": Eq.json"
 loadConfig baseDir (Right fileContent) =
   case decode fileContent of
     Left err => print err
