@@ -5,5 +5,4 @@ sourcedir = "src"
 modules = Config
         , Main
         , Parser
-        , Data.Yaml
         , Data.Json
