@@ -1,7 +1,9 @@
 package sae-0_0_1
 
-depends = contrib
 sourcedir = "src"
+
+depends = contrib
+
 modules = Config
         , Main
         , Parser
