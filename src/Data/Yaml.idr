@@ -17,4 +17,4 @@ public export
 Show Value2 where
   show (MkObject2 xs) = "MkObject " ++ show xs
   show (MkArray xs) = "MkArray " ++ show xs
-  show (MkString s) = "MkString" ++ show s
+  show (MkString s) = "MkString " ++ show s

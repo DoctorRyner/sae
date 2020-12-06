@@ -28,24 +28,38 @@ moduleDecl = do
   name <- takeWhile (/= '\n')
   pure name
 
+export
+strict : Parser a -> Parser a
+strict = flip (<*) eos
+
 mutual
+  ymlObjItem : Parser (String, Value2)
+  ymlObjItem = do
+    key <- takeWhile1 (/= ':')
+    char ':'
+    val <- ymlVal
+    pure (key, val)
+
+  ymlObj : Parser Value2
+  ymlObj = MkObject2 <$> many ymlObjItem
+
   ymlStr : Parser Value2
   ymlStr = do
-    spaces
-    MkString <$> takeWhile1 (/= '\n')
+    str <- takeWhile1 \c => c /= '\n' && c /= ':'
+    char '\n'
+    pure $ MkString str
 
   arrItem : Parser Value2
   arrItem = do
-    spaces
     char '-'
     spaces
     ymlVal
 
   ymlArr : Parser Value2
   ymlArr = do
-    newlines
-    MkArray <$> (ymlVal `sepBy` char '\n')
+    char '\n'
+    MkArray <$> (arrItem `sepBy` char '\n')
 
   export
   ymlVal : Parser Value2
-  ymlVal = choice [ymlStr, ymlArr]
+  ymlVal = choice [ymlArr, ymlStr, ymlObj]
