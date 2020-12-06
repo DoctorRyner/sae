@@ -6,12 +6,13 @@ import System.Directory
 import System.File
 import System
 
-public export
 data Command
   = Help
   | New String
   | Build
   | Release
+  -- | Install
+  -- | Run
 
 qts : String -> String
 qts s = "\"" ++ s ++ "\""
