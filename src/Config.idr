@@ -50,10 +50,10 @@ export
 configToIpkg : Config -> String
 configToIpkg cfg = concatMap (++ "\n")
   [ "package " ++ cfg.package ++ "-" ++ (pack $ map (\x => if x == '.' then '_' else x) $ unpack cfg.version) ++ "\n"
-  , "sourcedir = \"" ++ cfg.sourcedir ++ "\""
+  , "sourcedir = \"" ++ cfg.sourcedir ++ "\"\n"
   , if length cfg.depends == 0
     then ""
-    else "depends = " ++ join "\n        , " cfg.depends
+    else "depends = " ++ join "\n        , " cfg.depends ++ "\n"
   , if length cfg.modules == 0
     then ""
     else "modules = " ++ join "\n        , " cfg.modules

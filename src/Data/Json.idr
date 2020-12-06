@@ -1,6 +1,5 @@
 module Data.Json
 
-import Data.Json.Parser
 import Data.String.Extra
 import Data.String.Parser
 
