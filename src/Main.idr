@@ -25,6 +25,6 @@ loadConfig _ (Left  err        ) = putStrLn $ show err ++ ": Eq.yml"
 loadConfig baseDir (Right fileContent) = either print (generateIpkg2 baseDir . yamlToConfig . fst) $ parse yamlObject fileContent
 
 main : IO ()
-main = do
-  baseDir <- fromMaybe "/" <$> currentDir
-  loadConfig baseDir !(readFile "Eq.yml")
+main = either print (print . parse ymlVal) !(readFile "Eq.yml")
+  -- baseDir <- fromMaybe "/" <$> currentDir
+  -- loadConfig baseDir !(readFile "Eq.yml")

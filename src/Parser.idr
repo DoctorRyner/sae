@@ -27,3 +27,25 @@ moduleDecl = do
   spaces
   name <- takeWhile (/= '\n')
   pure name
+
+mutual
+  ymlStr : Parser Value2
+  ymlStr = do
+    spaces
+    MkString <$> takeWhile1 (/= '\n')
+
+  arrItem : Parser Value2
+  arrItem = do
+    spaces
+    char '-'
+    spaces
+    ymlVal
+
+  ymlArr : Parser Value2
+  ymlArr = do
+    newlines
+    MkArray <$> (ymlVal `sepBy` char '\n')
+
+  export
+  ymlVal : Parser Value2
+  ymlVal = choice [ymlStr, ymlArr]
