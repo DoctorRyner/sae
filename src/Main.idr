@@ -3,27 +3,24 @@ module Main
 import Data.Maybe
 import Data.String.Parser
 import Data.Json
+import Data.List
 import System.Directory
 import System.File
+import System
 import Config
+import CLI.Command
 
-generateIpkg : String -> Config -> IO ()
-generateIpkg baseDir cfg = do
-  let
-    ipkg     = configToIpkg $ record {modules = !(modulesFromSourcedir cfg.sourcedir)} cfg
-    ipkgPath = baseDir ++ "/" ++ cfg.package ++ ".ipkg"
-  case !(writeFile ipkgPath ipkg) of
-    Left err => print err
-    Right _  => putStrLn $ "Generated: " ++ ipkgPath
-
-loadConfig : String -> Either FileError String -> IO ()
-loadConfig _ (Left  err) = putStrLn $ show err ++ ": Eq.json"
+loadConfig : String -> Either FileError String -> Either String Config
+loadConfig _ (Left  err) = Left $ show err ++ ": Eq.json"
 loadConfig baseDir (Right fileContent) =
   case decode fileContent of
-    Left err => print err
-    Right x => generateIpkg baseDir $ jsonToConfig x
+    Left err => Left $ show err
+    Right x => Right $ jsonToConfig x
 
 main : IO ()
 main = do
+  args <- getArgs
   baseDir <- fromMaybe "/" <$> currentDir
-  loadConfig baseDir !(readFile "Eq.json")
+  case loadConfig baseDir !(readFile "Eq.json") of
+    Left err => putStrLn err
+    Right cfg => execArgs baseDir cfg $ drop 1 args
