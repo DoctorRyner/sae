@@ -2,7 +2,7 @@ module Config
 
 import Data.Either
 import Data.List
-import Data.Yaml
+import Data.Json
 import Data.Maybe
 import Data.String.Extra
 import Data.String.Parser
@@ -17,24 +17,43 @@ record Config where
   version,
   target,
   sourcedir : String
-  modules   : List String
+  depends : List String
+  modules : List String
+
+fromMbJsonString : String -> Maybe Value -> String
+fromMbJsonString _ (Just (MkString x)) = x
+fromMbJsonString fallback _ = fallback
 
 export
-yamlToConfig : List Value -> Config
-yamlToConfig xs =
+jsonToConfig : Value -> Config
+jsonToConfig (MkObject xs) =
   let
-    list      = map (\(MkObject key val) => (key, val)) xs
-    package   = fromMaybe "default" $ lookup "package"   list
-    version   = fromMaybe "0.0.0"   $ lookup "version"   list
-    target    = fromMaybe "chez"    $ lookup "target"    list
-    sourcedir = fromMaybe "src"     $ lookup "sourcedir" list
-  in MkConfig package version target sourcedir []
+    package = fromMbJsonString "default" $ lookup "package" xs
+    version = fromMbJsonString "0.0.0" $ lookup "version" xs
+    target = fromMbJsonString "chez" $ lookup "target" xs
+    sourcedir = fromMbJsonString "src" $ lookup "sourcedir" xs
+    depends =
+      case lookup "depends" xs of
+        Just (MkArray xs) =>
+          rights $
+            map
+              (\case
+                MkString x => Right x
+                _ => Left ()
+              )
+              xs
+        _ => []
+  in MkConfig package version target sourcedir depends []
+jsonToConfig _ = MkConfig "default" "0.0.0" "chez" "src" [] []
 
 export
 configToIpkg : Config -> String
 configToIpkg cfg = concatMap (++ "\n")
   [ "package " ++ cfg.package ++ "-" ++ (pack $ map (\x => if x == '.' then '_' else x) $ unpack cfg.version) ++ "\n"
   , "sourcedir = \"" ++ cfg.sourcedir ++ "\""
+  , if length cfg.depends == 0
+    then ""
+    else "depends = " ++ join "\n        , " cfg.depends
   , if length cfg.modules == 0
     then ""
     else "modules = " ++ join "\n        , " cfg.modules
