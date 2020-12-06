@@ -17,7 +17,7 @@ record Config where
   version,
   target,
   sourcedir : String
-  depends : List String
+  depends,
   modules : List String
 
 fromMbJsonString : String -> Maybe Value -> String
