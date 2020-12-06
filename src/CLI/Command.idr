@@ -38,15 +38,19 @@ exec : String -> Config -> Command -> IO ()
 exec _ _ Help = putStrLn "There is no help, suffer"
 exec baseDir cfg Release = do
   exec baseDir cfg Build
-  system $ concatMap (++ " ")
+  releaseCode <- system $ concatMap (++ " ")
     [ "idris2"
     , cfg.sourcedir ++ "/Main.idr"
     , concatMap ("-p " ++) cfg.depends
     , "-o " ++ cfg.package
     ]
-  pure ()
+  putStrLn $
+    if releaseCode == 0
+    then "Compiled: " ++ baseDir ++ "/build/exec/" ++ cfg.package
+    else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ cfg.package
 exec baseDir cfg Build = do
   generateIpkg baseDir cfg
+  changeDir baseDir
   system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
   pure ()
 exec _ _ (New package) = do

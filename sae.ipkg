@@ -7,4 +7,4 @@ depends = contrib
 modules = Config
         , Main
         , Parser
-        , Data.Json
+        , CLI.Command
