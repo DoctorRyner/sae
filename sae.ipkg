@@ -5,7 +5,9 @@ sourcedir = "src"
 depends = contrib
 
 modules = Main
+        , Sae.Types
+        , Sae.Utils
+        , Sae.Command
         , Sae.Config
         , Sae.App
         , Sae.Parser
-        , Sae.CLI.Command

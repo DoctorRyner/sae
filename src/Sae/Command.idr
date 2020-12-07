@@ -1,22 +1,13 @@
-module Sae.CLI.Command
-
-import Data.Strings
-import System.Directory
-import System.File
-import System
+module Sae.Command
 
 import public Sae.Config
 
-data Command
-  = Help
-  | New String
-  | Build
-  | Release
-  -- | Install
-  -- | Run
-
-qts : String -> String
-qts s = "\"" ++ s ++ "\""
+import Data.Strings
+import Sae.Types
+import Sae.Utils
+import System
+import System.Directory
+import System.File
 
 mkEqFile : String -> String
 mkEqFile package = unlines

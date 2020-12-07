@@ -1,15 +1,16 @@
 module Sae.App
 
-import Data.Maybe
-import Data.String.Parser
+import Control.App
 import Data.Json
+import Data.Maybe
 import Data.List
+import Data.String.Parser
+import Sae.Config
+import Sae.Command
+import Sae.Types
 import System.Directory
 import System.File
 import System
-
-import Sae.Config
-import Sae.CLI.Command
 
 loadConfig : String -> Either FileError String -> Either String Config
 loadConfig _ (Left  err) = Left $ show err ++ ": Eq.json"
@@ -26,3 +27,6 @@ runSae = do
   case loadConfig baseDir !(readFile "Eq.json") of
     Left err => putStrLn err
     Right cfg => execArgs baseDir cfg $ drop 1 args
+
+runAppIO : AppState -> AppIO () -> App [AppError] ()
+runAppIO = new

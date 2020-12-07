@@ -10,16 +10,7 @@ import Data.Strings
 import System.Directory
 
 import Sae.Parser
-
-public export
-record Config where
-  constructor MkConfig
-  package,
-  version,
-  target,
-  sourcedir : String
-  depends,
-  modules : List String
+import Sae.Types
 
 fromMbJsonString : String -> Maybe Value -> String
 fromMbJsonString _ (Just (MkString x)) = x
