@@ -1,6 +1,7 @@
 module Sae.Types
 
 import public Control.App
+import public Control.App.Console
 
 import Control.App.Console
 import Sae.Utils

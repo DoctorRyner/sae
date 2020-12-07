@@ -93,9 +93,32 @@ runCmdIO _ = pure ()
 
 export
 runCmd : Command -> AppIO ()
+runCmd Build = do
+  state <- get ()
+  primIO $ do
+    generateIpkg state.baseDir state.cfg
+    changeDir state.baseDir
+    system $ "idris2 --build " ++ state.cfg.package ++ ".ipkg"
+    pure ()
+runCmd Release = do
+  state <- get ()
+  runCmd Build
+  primIO $ do
+    releaseCode <- system $ concatMap (++ " ")
+      [ "idris2"
+      , state.cfg.sourcedir ++ "/Main.idr"
+      , concatMap ("-p " ++) state.cfg.depends
+      , "-o " ++ state.cfg.package
+      ]
+    putStrLn $
+      if releaseCode == 0
+      then "Compiled: " ++ state.baseDir ++ "/build/exec/" ++ state.cfg.package
+      else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ state.cfg.package
 runCmd _ = pure ()
 
 export
 parseArgs : List String -> Command
 parseArgs ("new"::x::_) = New x
+parseArgs ("build"::_) = Build
+parseArgs ("release"::_) = Release
 parseArgs _ = Help
