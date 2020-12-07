@@ -30,7 +30,10 @@ runSae = do
     Right cfg => execArgs baseDir cfg $ drop 1 args
 
 app : AppIO ()
-app = pure ()
+app = do
+  args <- primIO getArgs
+  baseDir <- fromMaybe "/" <$> primIO currentDir
+  pure ()
 
 appReactor : (Console Init, State () AppState Init) => App Init ()
 appReactor = handle app pure print

@@ -35,6 +35,8 @@ public export
 record AppState where
   constructor MkAppState
   cfg : Config
+  args,
+  baseDir : String
 
 -- export
 -- AppIO : Type -> Type
