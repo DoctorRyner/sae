@@ -1,10 +1,11 @@
-module CLI.Command
+module Sae.CLI.Command
 
-import Config
 import Data.Strings
 import System.Directory
 import System.File
 import System
+
+import public Sae.Config
 
 data Command
   = Help

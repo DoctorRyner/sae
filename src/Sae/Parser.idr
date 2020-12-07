@@ -1,4 +1,4 @@
-module Parser
+module Sae.Parser
 
 import Data.String.Parser
 

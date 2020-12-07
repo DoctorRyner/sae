@@ -1,4 +1,4 @@
-module Config
+module Sae.Config
 
 import Data.Either
 import Data.List
@@ -8,7 +8,8 @@ import Data.String.Extra
 import Data.String.Parser
 import Data.Strings
 import System.Directory
-import Parser
+
+import Sae.Parser
 
 public export
 record Config where
