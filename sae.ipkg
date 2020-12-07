@@ -11,4 +11,3 @@ modules = Main
         , Sae.Config
         , Sae.App
         , Sae.Parser
-        , Sae.CLI.Parser

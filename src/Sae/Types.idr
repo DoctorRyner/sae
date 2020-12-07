@@ -1,6 +1,7 @@
 module Sae.Types
 
-import Control.App
+import public Control.App
+
 import Control.App.Console
 import Sae.Utils
 
@@ -13,7 +14,6 @@ record Config where
   sourcedir : String
   depends,
   modules : List String
-
 
 public export
 data Command
@@ -35,7 +35,6 @@ public export
 record AppState where
   constructor MkAppState
   cfg : Config
-  args,
   baseDir : String
 
 -- export

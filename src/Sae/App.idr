@@ -20,23 +20,26 @@ loadConfig baseDir (Right fileContent) =
     Left err => Left $ show err
     Right x => Right $ jsonToConfig x
 
+app : Command -> AppIO ()
+app = runCmd
+
+appReactor : Command -> (Console Init, State () AppState Init) => App Init ()
+appReactor cmd = handle (app cmd) pure print
+
+runWithState : AppState -> Command -> IO ()
+runWithState state cmd = run $ new state $ appReactor cmd
+
 export
 runSae : IO ()
 runSae = do
   args <- getArgs
-  baseDir <- fromMaybe "/" <$> currentDir
-  case loadConfig baseDir !(readFile "Eq.json") of
-    Left err => putStrLn err
-    Right cfg => execArgs baseDir cfg $ drop 1 args
-
-app : AppIO ()
-app = do
-  args <- primIO getArgs
-  baseDir <- fromMaybe "/" <$> primIO currentDir
-  pure ()
-
-appReactor : (Console Init, State () AppState Init) => App Init ()
-appReactor = handle app pure print
-
-runWithState : AppState -> IO ()
-runWithState state = run $ new state appReactor
+  let cmd = parseArgs $ drop 1 args
+  case cmd of
+    Help => runCmdIO Help
+    New x => runCmdIO $ New x
+    _ => do
+      baseDir <- fromMaybe "/" <$> currentDir
+      case loadConfig baseDir !(readFile "Eq.json") of
+        Left err => putStrLn err
+        Right cfg => do
+          runWithState (MkAppState cfg baseDir) cmd

@@ -64,7 +64,38 @@ exec _ _ (New package) = do
 export
 execArgs : String -> Config -> List String -> IO ()
 execArgs baseDir cfg ("new"::x::xs) = exec baseDir cfg $ New x
-execArgs baseDir cfg ("help"::_) = exec baseDir cfg Help
 execArgs baseDir cfg ("build"::_) = exec baseDir cfg Build
 execArgs baseDir cfg ("release"::_) = exec baseDir cfg Release
-execArgs _ _ _ = putStrLn "Type: 'sae help' for help"
+execArgs baseDir cfg _ = exec baseDir cfg Help
+
+helpMessage : String
+helpMessage = "There is no help message yet"
+
+basicMainFile : String
+basicMainFile = unlines
+  ["module Main"
+  , ""
+  , "main : IO ()"
+  , "main = putStrLn " ++ qts "Now I gonna solve all of the equations!"
+  ]
+
+export
+runCmdIO : Command -> IO ()
+runCmdIO Help = putStrLn helpMessage
+runCmdIO (New package) = do
+  createDir package
+  changeDir package
+  createDir "src"
+  writeFile "Eq.json" $ mkEqFile package
+  writeFile "src/Main.idr" basicMainFile
+  pure ()
+runCmdIO _ = pure ()
+
+export
+runCmd : Command -> AppIO ()
+runCmd _ = pure ()
+
+export
+parseArgs : List String -> Command
+parseArgs ("new"::x::_) = New x
+parseArgs _ = Help
