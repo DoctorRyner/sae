@@ -1,6 +1,7 @@
 module Sae.App
 
 import Control.App
+import Control.App.Console
 import Data.Json
 import Data.Maybe
 import Data.List
@@ -28,5 +29,11 @@ runSae = do
     Left err => putStrLn err
     Right cfg => execArgs baseDir cfg $ drop 1 args
 
-runAppIO : AppState -> AppIO () -> App [AppError] ()
-runAppIO = new
+app : AppIO ()
+app = pure ()
+
+appReactor : (Console Init, State () AppState Init) => App Init ()
+appReactor = handle app pure print
+
+runWithState : AppState -> IO ()
+runWithState state = run $ new state appReactor

@@ -1,6 +1,7 @@
 module Sae.Types
 
 import Control.App
+import Control.App.Console
 import Sae.Utils
 
 public export
@@ -41,4 +42,4 @@ record AppState where
 
 public export
 AppIO : Type -> Type
-AppIO a = State "" AppState [AppError] => App [AppError] a
+AppIO a = (Console (AppError :: Init), State () AppState (AppError :: Init)) => App (AppError :: Init) a
