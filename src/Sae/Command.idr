@@ -108,7 +108,10 @@ runCmd baseDir cfg Release = do
     else "Compiled: " ++ baseDir ++ "/build/exec/" ++ executableName
 runCmd baseDir cfg Run = do
   runCmd baseDir cfg Build
-  system $ "./build/exec/" ++ cfg.package
+  system $
+    if cfg.target == "javascript"
+    then "node ./build/exec/index.js"
+    else "./build/exec/" ++ cfg.package
   pure ()
 runCmd baseDir cfg FetchDeps = loadDeps baseDir cfg.sources
 runCmd baseDir cfg BuildDeps = installDeps baseDir cfg.sources
