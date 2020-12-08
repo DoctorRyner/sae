@@ -18,11 +18,6 @@ record Config where
   modules : List String
 
 public export
-Show Config where
-  show cfg = concat
-    ["sources = " ++ show cfg.sources]
-
-public export
 data Command
   = Help
   | New String
