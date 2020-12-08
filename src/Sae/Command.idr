@@ -47,6 +47,7 @@ runCmdSimple (New package) = do
   createDir "src"
   writeFile "Eq.json" $ mkEqFile package
   writeFile "src/Main.idr" basicMainFile
+  writeFile ".gitignore" $ unlines ["deps/", "build/", "DS_Store", "*.ipkg"]
   pure ()
 runCmdSimple _ = pure ()
 

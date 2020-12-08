@@ -106,13 +106,13 @@ loadDeps baseDir urls = do
 export
 installDeps : String -> List String -> IO ()
 installDeps baseDir urls = do
+  loadDeps baseDir urls
   changeDir baseDir
   dirs <- getDirs "deps"
   changeDir "deps"
   traverse_
     (\dir => do
       changeDir $ baseDir ++ "/deps/" ++ dir
-      system "sae fetch"
       system "sae build-deps"
       system "sae install"
     )
