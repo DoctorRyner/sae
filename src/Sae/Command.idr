@@ -77,6 +77,8 @@ runCmd baseDir cfg Run = do
   runCmd baseDir cfg Build
   system $ "./build/exec/" ++ cfg.package
   pure ()
+runCmd baseDir cfg FetchDeps = loadDeps baseDir cfg.sources
+runCmd baseDir cfg BuildDeps = installDeps baseDir cfg.sources
 runCmd _ _ _ = pure ()
 
 export
@@ -86,4 +88,6 @@ parseArgs ("build"::_) = Build
 parseArgs ("install"::_) = Install
 parseArgs ("release"::_) = Release
 parseArgs ("run"::_) = Run
+parseArgs ("fetch"::_) = FetchDeps
+parseArgs ("build-deps"::_) = BuildDeps
 parseArgs _ = Help

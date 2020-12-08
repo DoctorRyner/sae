@@ -7,10 +7,10 @@ import Data.Maybe
 import Data.String.Extra
 import Data.String.Parser
 import Data.Strings
-import System.Directory
-
 import Sae.Parser
 import Sae.Types
+import System
+import System.Directory
 
 fromMbJsonString : String -> Maybe Value -> String
 fromMbJsonString _ (Just (MkString x)) = x
@@ -30,12 +30,23 @@ jsonToConfig (MkObject xs) =
           rights $
             map
               (\case
+                MkString x => Right $ pack $ map (\c => if c == '.' then '_' else c) $ unpack x
+                _ => Left ()
+              )
+              xs
+        _ => []
+    sources =
+      case lookup "sources" xs of
+        Just (MkArray xs) =>
+          rights $
+            map
+              (\case
                 MkString x => Right x
                 _ => Left ()
               )
               xs
         _ => []
-  in MkConfig package version target sourcedir depends [] []
+  in MkConfig package version target sourcedir depends sources []
 jsonToConfig _ = MkConfig "default" "0.0.0" "chez" "src" [] [] []
 
 export
@@ -82,3 +93,27 @@ modulesFromSourcedir path = do
         else do
           modulesBunch <- traverse modulesFromSourcedir restFiles
           pure $ modules ++ concat modulesBunch
+
+export
+loadDeps : String -> List String -> IO ()
+loadDeps baseDir urls = do
+  changeDir baseDir
+  createDir "deps"
+  changeDir $ baseDir ++ "/deps"
+  traverse (system . ("git clone " ++)) urls
+  pure ()
+
+export
+installDeps : String -> List String -> IO ()
+installDeps baseDir urls = do
+  changeDir baseDir
+  dirs <- getDirs "deps"
+  changeDir "deps"
+  traverse_
+    (\dir => do
+      changeDir $ baseDir ++ "/deps/" ++ dir
+      system "sae fetch"
+      system "sae build-deps"
+      system "sae install"
+    )
+    dirs
