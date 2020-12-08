@@ -28,7 +28,30 @@ generateIpkg baseDir cfg = do
     Right _  => putStrLn $ "Generated: " ++ ipkgPath
 
 helpMessage : String
-helpMessage = "There is no help message yet"
+helpMessage = unlines
+  [ "Usage:"
+  , ""
+  , "# Create new project"
+  , "sae new project-name"
+  , ""
+  , "# Fetch dependencies"
+  , "sae fetch"
+  , ""
+  , "# Build (and fetch) dependencies"
+  , "sae build-deps"
+  , ""
+  , "# Build project"
+  , "sae build"
+  , ""
+  , "# Install (and build) project as a library"
+  , "sae install"
+  , ""
+  , "# Build executable"
+  , "sae release"
+  , ""
+  , "# Run (and build) executable"
+  , "sae run"
+  ]
 
 basicMainFile : String
 basicMainFile = unlines
