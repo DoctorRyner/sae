@@ -35,8 +35,8 @@ jsonToConfig (MkObject xs) =
               )
               xs
         _ => []
-  in MkConfig package version target sourcedir depends []
-jsonToConfig _ = MkConfig "default" "0.0.0" "chez" "src" [] []
+  in MkConfig package version target sourcedir depends [] []
+jsonToConfig _ = MkConfig "default" "0.0.0" "chez" "src" [] [] []
 
 export
 configToIpkg : Config -> String

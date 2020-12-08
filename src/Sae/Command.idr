@@ -39,53 +39,45 @@ basicMainFile = unlines
   ]
 
 export
-runCmdIO : Command -> IO ()
-runCmdIO Help = putStrLn helpMessage
-runCmdIO (New package) = do
+runCmdSimple : Command -> IO ()
+runCmdSimple Help = putStrLn helpMessage
+runCmdSimple (New package) = do
   createDir package
   changeDir package
   createDir "src"
   writeFile "Eq.json" $ mkEqFile package
   writeFile "src/Main.idr" basicMainFile
   pure ()
-runCmdIO _ = pure ()
+runCmdSimple _ = pure ()
 
 export
-runCmd : Command -> AppIO ()
-runCmd Build = do
-  state <- get ()
-  primIO $ do
-    generateIpkg state.baseDir state.cfg
-    changeDir state.baseDir
-    system $ "idris2 --build " ++ state.cfg.package ++ ".ipkg"
-    pure ()
-runCmd Install = do
-  state <- get ()
-  runCmd Build
-  primIO $ do
-    system $ "idris2 --install " ++ state.cfg.package ++ ".ipkg"
-    pure ()
-runCmd Release = do
-  state <- get ()
-  runCmd Build
-  primIO $ do
-    releaseCode <- system $ concatMap (++ " ")
-      [ "idris2"
-      , state.cfg.sourcedir ++ "/Main.idr"
-      , concatMap ("-p " ++) state.cfg.depends
-      , "-o " ++ state.cfg.package
-      ]
-    putStrLn $
-      if releaseCode == 0
-      then "Compiled: " ++ state.baseDir ++ "/build/exec/" ++ state.cfg.package
-      else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ state.cfg.package
-runCmd Run = do
-  runCmd Build
-  state <- get ()
-  primIO $ do
-    system $ "./build/exec/" ++ state.cfg.package
-    pure ()
-runCmd _ = pure ()
+runCmd : String -> Config -> Command -> IO ()
+runCmd baseDir cfg Build = do
+  generateIpkg baseDir cfg
+  changeDir baseDir
+  system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
+  pure ()
+runCmd baseDir cfg Install = do
+  runCmd baseDir cfg Build
+  system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
+  pure ()
+runCmd baseDir cfg Release = do
+  runCmd baseDir cfg Build
+  releaseCode <- system $ concatMap (++ " ")
+    [ "idris2"
+    , cfg.sourcedir ++ "/Main.idr"
+    , concatMap ("-p " ++) cfg.depends
+    , "-o " ++ cfg.package
+    ]
+  putStrLn $
+    if releaseCode == 0
+    then "Compiled: " ++ baseDir ++ "/build/exec/" ++ cfg.package
+    else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ cfg.package
+runCmd baseDir cfg Run = do
+  runCmd baseDir cfg Build
+  system $ "./build/exec/" ++ cfg.package
+  pure ()
+runCmd _ _ _ = pure ()
 
 export
 parseArgs : List String -> Command

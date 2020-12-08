@@ -13,21 +13,19 @@ import System.Directory
 import System.File
 import System
 
-loadConfig : String -> Either FileError String -> Either String Config
-loadConfig _ (Left  err) = Left $ show err ++ ": Eq.json"
-loadConfig baseDir (Right fileContent) =
+decodeConfig : String -> Either FileError String -> Either String Config
+decodeConfig _ (Left  err) = Left $ show err ++ ": Eq.json"
+decodeConfig baseDir (Right fileContent) =
   case decode fileContent of
     Left err => Left $ show err
     Right x => Right $ jsonToConfig x
 
-app : Command -> AppIO ()
-app = runCmd
-
-appReactor : Command -> (Console Init, State () AppState Init) => App Init ()
-appReactor cmd = handle (app cmd) pure print
-
-runWithState : AppState -> Command -> IO ()
-runWithState state cmd = run $ new state $ appReactor cmd
+loadConfigAndRunCmd : Command -> IO ()
+loadConfigAndRunCmd cmd = do
+  baseDir <- fromMaybe "/" <$> currentDir
+  case decodeConfig baseDir !(readFile "Eq.json") of
+    Left err => putStrLn err
+    Right cfg => runCmd baseDir cfg cmd
 
 export
 runSae : IO ()
@@ -35,11 +33,6 @@ runSae = do
   args <- getArgs
   let cmd = parseArgs $ drop 1 args
   case cmd of
-    Help => runCmdIO Help
-    New x => runCmdIO $ New x
-    _ => do
-      baseDir <- fromMaybe "/" <$> currentDir
-      case loadConfig baseDir !(readFile "Eq.json") of
-        Left err => putStrLn err
-        Right cfg => do
-          runWithState (MkAppState cfg baseDir) cmd
+    Help => runCmdSimple Help
+    New x => runCmdSimple $ New x
+    _ => loadConfigAndRunCmd cmd
