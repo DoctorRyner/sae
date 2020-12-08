@@ -62,6 +62,7 @@ configToIpkg cfg = concatMap (++ "\n")
     else "modules = " ++ join "\n        , " cfg.modules
   ]
 
+export
 getDirs : String -> IO (List String)
 getDirs path = case !(openDir path) of
   Left  _   => pure []

@@ -20,12 +20,17 @@ mkEqFile package = unlines
 
 generateIpkg : String -> Config -> IO ()
 generateIpkg baseDir cfg = do
+  dirs <- getDirs baseDir
+
   let
     ipkg     = configToIpkg $ record {modules = !(modulesFromSourcedir cfg.sourcedir)} cfg
     ipkgPath = baseDir ++ "/" ++ cfg.package ++ ".ipkg"
+
   case !(writeFile ipkgPath ipkg) of
     Left err => print err
-    Right _  => putStrLn $ "Generated: " ++ ipkgPath
+    Right _  =>
+      when (not (cfg.package ++ ".ipkg" `elem` dirs)) $
+        putStrLn $ "Generated: " ++ ipkgPath
 
 helpMessage : String
 helpMessage = unlines
@@ -87,16 +92,20 @@ runCmd baseDir cfg Install = do
   pure ()
 runCmd baseDir cfg Release = do
   runCmd baseDir cfg Build
-  releaseCode <- system $ concatMap (++ " ")
-    [ "idris2"
-    , cfg.sourcedir ++ "/Main.idr"
-    , concatMap ("-p " ++) cfg.depends
-    , "-o " ++ cfg.package
-    ]
+  let
+    executableName = if cfg.target == "javascript" then "index.js" else cfg.package
+    releaseCmd = concatMap (++ " ")
+      [ "idris2"
+      , cfg.sourcedir ++ "/Main.idr"
+      , "--codegen " ++ cfg.target
+      , concatMap (" -p " ++) cfg.depends
+      , "-o " ++ executableName
+      ]
+  releaseCode <- system releaseCmd
   putStrLn $
-    if releaseCode == 0
-    then "Compiled: " ++ baseDir ++ "/build/exec/" ++ cfg.package
-    else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ cfg.package
+    if releaseCode == -1
+    then "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ cfg.package
+    else "Compiled: " ++ baseDir ++ "/build/exec/" ++ executableName
 runCmd baseDir cfg Run = do
   runCmd baseDir cfg Build
   system $ "./build/exec/" ++ cfg.package
