@@ -1,5 +1,7 @@
 module Sae.Types
 
+-- TODO Remove AppIO
+
 import public Control.App
 import public Control.App.Console
 
@@ -22,8 +24,8 @@ data Command
   | New String
   | Build
   | Release
-  -- | Install
-  -- | Run
+  | Install
+  | Run
 
 public export
 data AppError = Custom String

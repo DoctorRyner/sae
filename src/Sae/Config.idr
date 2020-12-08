@@ -70,7 +70,7 @@ modulesFromSourcedir path = do
   if not !(changeDir path)
     then pure []
     else do
-      mbDir <-currentDir
+      mbDir <- currentDir
       let dir = fromMaybe "/" mbDir
       files <- getDirs dir
       let idrisFiles = filter (isSuffixOf ".idr") files

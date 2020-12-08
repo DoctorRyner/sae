@@ -27,47 +27,6 @@ generateIpkg baseDir cfg = do
     Left err => print err
     Right _  => putStrLn $ "Generated: " ++ ipkgPath
 
-exec : String -> Config -> Command -> IO ()
-exec _ _ Help = putStrLn "There is no help, suffer"
-exec baseDir cfg Release = do
-  exec baseDir cfg Build
-  releaseCode <- system $ concatMap (++ " ")
-    [ "idris2"
-    , cfg.sourcedir ++ "/Main.idr"
-    , concatMap ("-p " ++) cfg.depends
-    , "-o " ++ cfg.package
-    ]
-  putStrLn $
-    if releaseCode == 0
-    then "Compiled: " ++ baseDir ++ "/build/exec/" ++ cfg.package
-    else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ cfg.package
-exec baseDir cfg Build = do
-  generateIpkg baseDir cfg
-  changeDir baseDir
-  system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
-  pure ()
-exec _ _ (New package) = do
-  createDir package
-  changeDir package
-  createDir "src"
-  writeFile "Eq.json" $ mkEqFile package
-  writeFile
-    "src/Main.idr" $
-    unlines
-      ["module Main"
-      , ""
-      , "main : IO ()"
-      , "main = putStrLn " ++ qts "Now I gonna solve all of the equations!"
-      ]
-  pure ()
-
-export
-execArgs : String -> Config -> List String -> IO ()
-execArgs baseDir cfg ("new"::x::xs) = exec baseDir cfg $ New x
-execArgs baseDir cfg ("build"::_) = exec baseDir cfg Build
-execArgs baseDir cfg ("release"::_) = exec baseDir cfg Release
-execArgs baseDir cfg _ = exec baseDir cfg Help
-
 helpMessage : String
 helpMessage = "There is no help message yet"
 
@@ -100,6 +59,12 @@ runCmd Build = do
     changeDir state.baseDir
     system $ "idris2 --build " ++ state.cfg.package ++ ".ipkg"
     pure ()
+runCmd Install = do
+  state <- get ()
+  runCmd Build
+  primIO $ do
+    system $ "idris2 --install " ++ state.cfg.package ++ ".ipkg"
+    pure ()
 runCmd Release = do
   state <- get ()
   runCmd Build
@@ -114,11 +79,19 @@ runCmd Release = do
       if releaseCode == 0
       then "Compiled: " ++ state.baseDir ++ "/build/exec/" ++ state.cfg.package
       else "ERROR(" ++ show releaseCode ++ "): Couldn't built " ++ state.cfg.package
+runCmd Run = do
+  runCmd Build
+  state <- get ()
+  primIO $ do
+    system $ "./build/exec/" ++ state.cfg.package
+    pure ()
 runCmd _ = pure ()
 
 export
 parseArgs : List String -> Command
 parseArgs ("new"::x::_) = New x
 parseArgs ("build"::_) = Build
+parseArgs ("install"::_) = Install
 parseArgs ("release"::_) = Release
+parseArgs ("run"::_) = Run
 parseArgs _ = Help
