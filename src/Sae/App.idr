@@ -15,24 +15,20 @@ import System
 
 decodeConfig : String -> Either FileError String -> Either String Config
 decodeConfig _ (Left  err) = Left $ show err ++ ": Eq.json"
-decodeConfig baseDir (Right fileContent) =
-  case decode fileContent of
-    Left err => Left $ show err
-    Right x => Right $ jsonToConfig x
+decodeConfig baseDir (Right fileContent) = bimap show jsonToConfig $ decode fileContent
 
 loadConfigAndRunCmd : Command -> IO ()
 loadConfigAndRunCmd cmd = do
-  baseDir <- fromMaybe "/" <$> currentDir
-  case decodeConfig baseDir !(readFile "Eq.json") of
-    Left err => putStrLn err
-    Right cfg => runCmd baseDir cfg cmd
+    baseDir <- fromMaybe "/" <$> currentDir
+    case decodeConfig baseDir !(readFile "Eq.json") of
+        Left err => putStrLn err
+        Right cfg => runCmd baseDir cfg cmd
 
 export
-runSae : IO ()
-runSae = do
-  args <- getArgs
-  let cmd = parseArgs $ drop 1 args
-  case cmd of
-    Help => runCmdSimple Help
-    New x => runCmdSimple $ New x
-    _ => loadConfigAndRunCmd cmd
+runSae : List String -> IO ()
+runSae args =
+    case cmdFromArgs args of
+        Help => runCmdWithoutConfig Help
+        New x => runCmdWithoutConfig $ New x
+        cmd => loadConfigAndRunCmd cmd
+

@@ -8,22 +8,22 @@ import Sae.Utils
 
 public export
 record Config where
-  constructor MkConfig
-  package,
-  version,
-  target,
-  sourcedir : String
-  depends,
-  sources,
-  modules : List String
+    constructor MkConfig
+    package,
+    version,
+    target,
+    sourcedir : String
+    depends,
+    sources,
+    modules : List String
 
 public export
 data Command
-  = Help
-  | New String
-  | Build
-  | Release
-  | Install
-  | Run
-  | FetchDeps
-  | BuildDeps
+    = Help
+    | New String
+    | Build
+    | Release
+    | Install
+    | Run
+    | FetchDeps
+    | BuildDeps
