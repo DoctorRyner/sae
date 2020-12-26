@@ -1,0 +1,12 @@
+package sae-0_0_2
+
+sourcedir = "src"
+
+depends = contrib
+
+modules = Main
+        , Sae.Types
+        , Sae.Command
+        , Sae.ArgsParser
+        , Sae.Config
+        , Sae.Info
