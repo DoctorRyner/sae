@@ -13,12 +13,12 @@ import System
 
 -}
 
-evalConfig : Maybe Config -> IO ()
-evalConfig Nothing = pure ()
-evalConfig (Just cfg) = pure ()
+evalConfig : Either ConfigError Config -> IO ()
+evalConfig (Left configError) = putStrLn $ "Error => " ++ configErrorToString configError
+evalConfig (Right config) = pure ()
 
 main : IO ()
 main = do
     let command = argsToCommand !getArgs
     -- runCommand command
-    evalConfig !(readConfig "")
+    evalConfig !readConfig

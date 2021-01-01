@@ -26,9 +26,9 @@ public export
 record Config where
   constructor MkConfig
   package,
-  version,
+  version : String
   target,
-  authors : String
+  authors,
   maintainers,
   license,
   brief,
@@ -41,16 +41,22 @@ record Config where
   builddir,
   outputdir : Maybe String
   depends,
-  modules,
+  modules : List String
   sources : List Source
 
 public export
 data ConfigError
      = UnknownField String
-     | TypeMismatch String JSON JSON
+     | TypeMismatch String String
+     | RequiredFieldMissing String
+     | ConfigFileShouldBeObject
+     | Custom String
 
-public export
-Show ConfigError where
-     show (UnknownField field) = "UnknownField " ++ field
-     show (TypeMismatch field expectedType actualType) =
-       "TypeMissmatch " ++ field ++ " " ++ show expectedType ++ " " ++ show actualType
+export
+configErrorToString : ConfigError -> String
+configErrorToString (UnknownField field) = "Unknown field: " ++ field
+configErrorToString (TypeMismatch field expectedType) =
+    "Type mismatch for the field " ++ field ++ ", expected " ++ expectedType
+configErrorToString (RequiredFieldMissing field) = "Missing required " ++ field ++ " field"
+configErrorToString ConfigFileShouldBeObject = "Config file should be an object"
+configErrorToString (Custom s) = s
