@@ -49,6 +49,7 @@ fromList [] = empty
 fromList (x::xs) = singleton x ++ fromList xs
 
 export
+-- %foreign (js "(t1, xs) => __prim_js2idris_array(xs)")
 toList : Array a -> List a
 toList xs =
   if length xs == 0

@@ -24,3 +24,10 @@ req path args body =
 export
 %foreign (js "(_a, _b, x) => x")
 unsafeCoerce : a -> b
+
+%foreign (js "time => {var waitTill = new Date(new Date().getTime() + time); while(waitTill > new Date()){}}")
+prim__jsSleep : Double -> PrimIO ()
+
+export
+jsSleep : Double -> IO ()
+jsSleep = primIO . prim__jsSleep

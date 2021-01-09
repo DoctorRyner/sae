@@ -6,8 +6,12 @@ public export
 data Nullable : Type -> Type where [external]
 
 export
-%foreign (js "(t1, x) => x ? true : false")
+%foreign (js "(t1, x) => x ? 0 : 1")
+isNullInt : Nullable a -> Double
+
+export
 isNull : Nullable a -> Bool
+isNull nullable = isNullInt nullable == 1.0
 
 export
 %foreign (js "t1 => null")

@@ -3,12 +3,16 @@ module Sae.Config
 import Control.Monad.ExceptIO
 import Data.Maybe
 import Data.List
+import Data.String.Extra
+import Js.Array
+import Js.FFI
 import Js.Glob
 import Js.Nullable
 import Js.Yaml
 import Sae.Types
 import System.Directory
 import System.File
+import System
 import Language.JSON
 
 ConfigIO : Type -> Type
@@ -152,18 +156,15 @@ parseConfig xs = do
         
         sourcedirPath = fromMaybe "src" sourcedir
 
-        modulesFetchLoop : Nullable (List String) -> List String
-        modulesFetchLoop nullable =
-            --fromNull [] 
-            --nullable
-            []
-            -- if
-            -- then modulesFetchLoop nullable
-            -- else unsafeFromNull nullable
+        refineModuleString : String -> String
+        refineModuleString xs =
+            pack $ map
+                (\c => if c == '/' then '.' else c)
+                (unpack $ dropLast 4 xs)
 
     modules <- primIO $ do
         changeDir sourcedirPath
-        modulesFetchLoop <$> getFileNames "**/*.idr"
+        map refineModuleString <$> getFileNames "**/*.idr"
 
     sources <- sourcesField xs
 
