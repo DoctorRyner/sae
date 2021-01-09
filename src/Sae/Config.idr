@@ -3,8 +3,11 @@ module Sae.Config
 import Control.Monad.ExceptIO
 import Data.Maybe
 import Data.List
+import Js.Glob
+import Js.Nullable
 import Js.Yaml
 import Sae.Types
+import System.Directory
 import System.File
 import Language.JSON
 
@@ -146,6 +149,21 @@ parseConfig xs = do
         builddir = optStringField "builddir" xs
         outputdir = optStringField "outputdir" xs
         depends = stringArrayField "depends" xs
+        
+        sourcedirPath = fromMaybe "src" sourcedir
+
+        modulesFetchLoop : Nullable (List String) -> List String
+        modulesFetchLoop nullable =
+            --fromNull [] 
+            --nullable
+            []
+            -- if
+            -- then modulesFetchLoop nullable
+            -- else unsafeFromNull nullable
+
+    modules <- primIO $ do
+        changeDir sourcedirPath
+        modulesFetchLoop <$> getFileNames "**/*.idr"
 
     sources <- sourcesField xs
 
@@ -166,7 +184,7 @@ parseConfig xs = do
         , builddir = builddir
         , outputdir = outputdir
         , depends = depends
-        , modules = []
+        , modules = modules
         , sources = sources
         }
 

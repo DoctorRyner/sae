@@ -81,6 +81,7 @@ Show Config where
                 , "builddir: " ++ show config.builddir
                 , "outputdir: " ++ show config.outputdir
                 , "depends: " ++ show config.depends
+                , "modules: " ++ show config.modules
                 , "sources: " ++ show config.sources
                 ]
             ++ "\n    }\n"

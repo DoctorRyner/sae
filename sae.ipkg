@@ -7,10 +7,12 @@ depends = contrib
 modules = Main
         , Control.Monad.ExceptIO
         , Js.Dom
+        , Js.Glob
         , Js.Object
         , Js.Console
         , Js.FFI
         , Js.Array
+        , Js.Nullable
         , Sae.Types
         , Sae.Command
         , Sae.ArgsParser
