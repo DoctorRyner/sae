@@ -1,0 +1,15 @@
+{
+  "name": "sae",
+  "version": "0.0.2",
+  "repository": "https://github.com/DoctorRyner/sae.git",
+  "author": "DoctorRyner <drryner@icloud.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "idris2 --build sae.ipkg",
+    "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
+    "test": "yarn release && cd example && node ../build/exec/index.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.0.0"
+  }
+}

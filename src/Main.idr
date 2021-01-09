@@ -3,7 +3,7 @@ module Main
 import Sae.ArgsParser
 import Sae.Command
 import Sae.Config
-import System
+import Js.System
 
 {- Project components
 

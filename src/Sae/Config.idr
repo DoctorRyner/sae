@@ -2,6 +2,7 @@ module Sae.Config
 
 import Control.Monad.ExceptIO
 import Data.List
+import Js.Yaml
 import Sae.Types
 import System.File
 import Language.JSON
@@ -86,7 +87,7 @@ parseConfig xs = do
     let f = optStringField xs
         target = f "target"
         authors = f "authors"
-        maintainer = f "maintainers"
+        maintainers = f "maintainers"
         license = f "license"
         brief = f "brief"
         readme = f "readme"
@@ -98,14 +99,33 @@ parseConfig xs = do
         builddir = f "builddir"
         outputdir = f "outputdir"
 
-    throwErr $ UnknownField "kek"
+    pure $ MkConfig
+        { package = package
+        , version = version
+        , target = target
+        , authors = authors
+        , maintainers = maintainers
+        , license = license
+        , brief = brief
+        , readme = readme
+        , homepage = homepage
+        , sourceloc = sourceloc
+        , bugtracker = bugtracker
+        , executable = executable
+        , sourcedir = sourcedir
+        , builddir = builddir
+        , outputdir = outputdir
+        , depends = []
+        , modules = []
+        , sources = []
+        }
 
 mkConfig : ConfigIO Config
 mkConfig = do
     eqFileContent <-
-        case !(primIO $ readFile "Eq.json") of
+        case !(primIO $ readFile "Eq.yml") of
             Left err => throw $ Custom $ show err
-            Right x => pure x
+            Right x => pure $ yamlToJson x
 
     objectContent <-
         case parse eqFileContent of
@@ -117,3 +137,12 @@ mkConfig = do
 export
 readConfig : IO (Either ConfigError Config)
 readConfig = runExceptIO mkConfig
+
+export
+configErrorToString : ConfigError -> String
+configErrorToString (UnknownField field) = "Unknown field: " ++ field
+configErrorToString (TypeMismatch field expectedType) =
+    "Type mismatch for the field " ++ field ++ ", expected " ++ expectedType
+configErrorToString (RequiredFieldMissing field) = "Missing required " ++ field ++ " field"
+configErrorToString ConfigFileShouldBeObject = "Config file should be an object"
+configErrorToString (Custom s) = s

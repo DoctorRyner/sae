@@ -1,5 +1,6 @@
 module Sae.Command
 
+import Js.Console
 import Sae.Info
 import Sae.Types
 
@@ -28,4 +29,4 @@ usageInfo =
 
 export
 runCommand : Command -> IO ()
-runCommand Help = putStrLn usageInfo
+runCommand Help = log usageInfo

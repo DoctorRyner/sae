@@ -51,12 +51,3 @@ data ConfigError
      | RequiredFieldMissing String
      | ConfigFileShouldBeObject
      | Custom String
-
-export
-configErrorToString : ConfigError -> String
-configErrorToString (UnknownField field) = "Unknown field: " ++ field
-configErrorToString (TypeMismatch field expectedType) =
-    "Type mismatch for the field " ++ field ++ ", expected " ++ expectedType
-configErrorToString (RequiredFieldMissing field) = "Missing required " ++ field ++ " field"
-configErrorToString ConfigFileShouldBeObject = "Config file should be an object"
-configErrorToString (Custom s) = s

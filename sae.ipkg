@@ -1,10 +1,16 @@
-package sae-0_0_2
+package sae
 
 sourcedir = "src"
 
 depends = contrib
 
 modules = Main
+        , Control.Monad.ExceptIO
+        , Js.Dom
+        , Js.Object
+        , Js.Console
+        , Js.FFI
+        , Js.Array
         , Sae.Types
         , Sae.Command
         , Sae.ArgsParser
