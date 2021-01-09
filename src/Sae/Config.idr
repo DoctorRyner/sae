@@ -1,6 +1,7 @@
 module Sae.Config
 
 import Control.Monad.ExceptIO
+import Data.Maybe
 import Data.List
 import Js.Yaml
 import Sae.Types
@@ -33,31 +34,13 @@ stringFields =
     ]
 
 stringListFields : List String
-stringListFields = ["depends", "modules", "sources"]
+stringListFields = ["depends", "modules"]
+
+sourceFields : List String
+sourceFields = ["name", "url", "version", "commit"]
 
 allowedFields : List String
-allowedFields = stringFields ++ stringListFields
-
-isJsonString : JSON -> Bool
-isJsonString = \case
-    JString _ => True
-    _ => False
-
-isJsonArrayOfStrings : JSON -> Bool
-isJsonArrayOfStrings = \case
-    JArray xs => all isJsonString xs
-    _ => False
-
-checkField : (String, JSON) -> ConfigIO ()
-checkField (field, jsonVal) = do
-    when (not $ elem field allowedFields) $
-        throw $ UnknownField field
-
-    when (elem field stringFields && not (isJsonString jsonVal)) $
-        throw $ TypeMismatch field "string"
-
-    when (elem field stringListFields && not (isJsonArrayOfStrings jsonVal)) $
-        throw $ TypeMismatch field "string array"
+allowedFields = stringFields ++ stringListFields ++ ["sources"]
 
 reqStringField : String -> List (String, JSON) -> ConfigIO String
 reqStringField field xs =
@@ -70,6 +53,64 @@ optStringField field xs =
     case lookup field xs of
         Just (JString x) => Just x
         _ => Nothing
+
+isJsonString : JSON -> Bool
+isJsonString = \case
+    JString _ => True
+    _ => False
+
+isJsonArrayOfStrings : JSON -> Bool
+isJsonArrayOfStrings = \case
+    JArray xs => all isJsonString xs
+    _ => False
+
+checkSourceField : (String, JSON) -> ConfigIO ()
+checkSourceField (field, jsonVal) = do
+    when (not $ elem field sourceFields) $
+        throw $ UnknownField field
+
+    when (elem field sourceFields && not (isJsonString jsonVal)) $
+        throw $ TypeMismatch field "string"
+
+jsonToSource : JSON -> ConfigIO Source
+jsonToSource (JObject xs) = do
+    traverse_ (\field => checkSourceField field) xs
+
+    name <- reqStringField "name" xs
+    url <- reqStringField "url" xs
+
+    let version = optStringField "version" xs
+        commit = optStringField "commit" xs
+
+    pure $ MkSource {name, url, version, commit}
+jsonToSource _ = throw $ TypeMismatch "sources" "another type"
+
+isJsonSource : JSON -> Bool
+isJsonSource = \case
+    JObject obj => True
+    _ => False
+
+isJsonArrayOfSources : JSON -> Bool
+isJsonArrayOfSources = \case
+    JArray xs => all isJsonSource xs
+    _ => False
+
+sourcesField : List (String, JSON) -> ConfigIO (List Source)
+sourcesField xs = do
+    case lookup "sources" xs of
+        (Just (JArray arr)) => traverse (\jsonVal => jsonToSource jsonVal) arr
+        _ => pure []
+
+checkField : (String, JSON) -> ConfigIO ()
+checkField (field, jsonVal) = do
+    when (not $ elem field allowedFields) $
+        throw $ UnknownField field
+
+    when (elem field stringFields && not (isJsonString jsonVal)) $
+        throw $ TypeMismatch field "string"
+
+    when (elem field stringListFields && not (isJsonArrayOfStrings jsonVal)) $
+        throw $ TypeMismatch field "string array"
 
 jsonListToStringList : List JSON -> List String
 jsonListToStringList (JString x::xs) = x :: jsonListToStringList xs
@@ -105,7 +146,8 @@ parseConfig xs = do
         builddir = optStringField "builddir" xs
         outputdir = optStringField "outputdir" xs
         depends = stringArrayField "depends" xs
-        sources = stringArrayField "sources" xs
+
+    sources <- sourcesField xs
 
     pure $ MkConfig
         { package = package
@@ -125,7 +167,7 @@ parseConfig xs = do
         , outputdir = outputdir
         , depends = depends
         , modules = []
-        , sources = []
+        , sources = sources
         }
 
 mkConfig : ConfigIO Config

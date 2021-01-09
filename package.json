@@ -10,6 +10,7 @@
     "test": "yarn release && cd example && node ../build/exec/index.js"
   },
   "dependencies": {
+    "glob": "^7.1.6",
     "js-yaml": "^4.0.0"
   }
 }
