@@ -48,22 +48,16 @@ isJsonArrayOfStrings = \case
     JArray xs => all isJsonString xs
     _ => False
 
-checkFieldType : String -> JSON -> ConfigIO ()
-checkFieldType field jsonVal = do
+checkField : (String, JSON) -> ConfigIO ()
+checkField (field, jsonVal) = do
+    when (not $ elem field allowedFields) $
+        throw $ UnknownField field
+
     when (elem field stringFields && not (isJsonString jsonVal)) $
         throw $ TypeMismatch field "string"
 
     when (elem field stringListFields && not (isJsonArrayOfStrings jsonVal)) $
         throw $ TypeMismatch field "string array"
-
-checkField : (String, JSON) -> ConfigIO String
-checkField (field, jsonVal) = do
-    when (not $ elem field allowedFields) $
-        throw $ UnknownField field
-
-    checkFieldType field jsonVal
-
-    pure field
 
 reqStringField : String -> List (String, JSON) -> ConfigIO String
 reqStringField field xs =
@@ -71,11 +65,22 @@ reqStringField field xs =
         Just (JString x) => pure x
         _ => throw $ RequiredFieldMissing field
 
-optStringField : List (String, JSON) -> String -> Maybe String
-optStringField xs field =
+optStringField : String -> List (String, JSON) -> Maybe String
+optStringField field xs =
     case lookup field xs of
         Just (JString x) => Just x
         _ => Nothing
+
+jsonListToStringList : List JSON -> List String
+jsonListToStringList (JString x::xs) = x :: jsonListToStringList xs
+jsonListToStringList (_::xs) = jsonListToStringList xs
+jsonListToStringList [] = []
+
+stringArrayField : String -> List (String, JSON) -> List String
+stringArrayField field xs =
+    case lookup field xs of
+        Just (JArray ys) => jsonListToStringList ys
+        _ => []
 
 parseConfig : List (String, JSON) -> ConfigIO Config
 parseConfig xs = do
@@ -84,20 +89,23 @@ parseConfig xs = do
     package <- reqStringField "package" xs
     version <- reqStringField "version" xs
 
-    let f = optStringField xs
-        target = f "target"
-        authors = f "authors"
-        maintainers = f "maintainers"
-        license = f "license"
-        brief = f "brief"
-        readme = f "readme"
-        homepage = f "homepage"
-        sourceloc = f "sourceloc"
-        bugtracker = f "bugtracker"
-        executable = f "executable"
-        sourcedir = f "sourcedir"
-        builddir = f "builddir"
-        outputdir = f "outputdir"
+    primIO $ putStrLn $ show xs
+
+    let target = optStringField "target" xs
+        authors = optStringField "authors" xs
+        maintainers = optStringField "maintainers" xs
+        license = optStringField "license" xs
+        brief = optStringField "brief" xs
+        readme = optStringField "readme" xs
+        homepage = optStringField "homepage" xs
+        sourceloc = optStringField "sourceloc" xs
+        bugtracker = optStringField "bugtracker" xs
+        executable = optStringField "executable" xs
+        sourcedir = optStringField "sourcedir" xs
+        builddir = optStringField "builddir" xs
+        outputdir = optStringField "outputdir" xs
+        depends = stringArrayField "depends" xs
+        sources = stringArrayField "sources" xs
 
     pure $ MkConfig
         { package = package
@@ -115,7 +123,7 @@ parseConfig xs = do
         , sourcedir = sourcedir
         , builddir = builddir
         , outputdir = outputdir
-        , depends = []
+        , depends = depends
         , modules = []
         , sources = []
         }

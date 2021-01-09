@@ -3,3 +3,8 @@ version: 0.0.1
 
 depends:
 - contrib
+
+sources:
+- name: idris-js
+  url: https://github.com/DoctorRyner/idris-js
+  commit: b07ad742fb56f28d693f8fbbcdf900a6e8911b96

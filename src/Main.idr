@@ -14,8 +14,8 @@ import Js.System
 -}
 
 evalConfig : Either ConfigError Config -> IO ()
-evalConfig (Left configError) = putStrLn $ "Error => " ++ configErrorToString configError
-evalConfig (Right config) = pure ()
+evalConfig (Left configError) = putStrLn $ configErrorToString configError
+evalConfig (Right config) = print config
 
 main : IO ()
 main = do
