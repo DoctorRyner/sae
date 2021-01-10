@@ -38,7 +38,7 @@ usageInfo =
 generateIpkg : Config -> IO ()
 generateIpkg cfg = do
     dir <- fromMaybe "./" <$> currentDir
-    ipkgFiles <- getFileNames "*"
+    ipkgFiles <- getFileNames "*.ipkg"
 
     let ipkgPath = dir ++ "/" ++ cfg.package ++ ".ipkg"
         ipkg = configToIpkg cfg
