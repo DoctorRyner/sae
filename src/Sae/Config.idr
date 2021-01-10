@@ -137,8 +137,6 @@ parseConfig xs = do
     package <- reqStringField "package" xs
     version <- reqStringField "version" xs
 
-    primIO $ putStrLn $ show xs
-
     let target = optStringField "target" xs
         authors = optStringField "authors" xs
         maintainers = optStringField "maintainers" xs

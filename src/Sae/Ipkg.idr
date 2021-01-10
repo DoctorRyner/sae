@@ -13,6 +13,7 @@ optField = \case
     (name, Just x) => name ++ " = " ++ x ++ "\n"
     _ => ""
 
+export
 configToIpkg : Config -> String
 configToIpkg cfg = concat
     [ "package " ++ cfg.package ++ "-" ++ (pack $ map (\x => if x == '.' then '_' else x) $ unpack cfg.version)
@@ -31,9 +32,10 @@ configToIpkg cfg = concat
         , "builddir" # cfg.builddir
         , "outputdir" # cfg.outputdir
         ]
+    , "\n"
     , if length cfg.depends == 0
       then ""
-      else "depends = " ++ join "\n        , " cfg.depends ++ "\n"
+      else "depends = " ++ join "\n        , " cfg.depends ++ "\n\n"
     , if length cfg.modules == 0
       then ""
       else "modules = " ++ join "\n        , " cfg.modules

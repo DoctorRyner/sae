@@ -7,7 +7,7 @@
   "scripts": {
     "build": "idris2 --build sae.ipkg",
     "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
-    "test": "yarn release && cd example && node ../build/exec/index.js"
+    "test": "yarn release && cd example && node ../build/exec/index.js generate-ipkg"
   },
   "dependencies": {
     "glob": "^7.1.6",

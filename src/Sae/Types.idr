@@ -9,10 +9,12 @@ import Data.String.Extra
 public export
 data Command
     = Help
+    | GenerateIpkg
 
 public export
 Show Command where
     show Help = "Help"
+    show GenerateIpkg = "GenerateConfig"
 
 -- Config
 
