@@ -149,12 +149,10 @@ parseConfig xs = do
         sourceloc = optStringField "sourceloc" xs
         bugtracker = optStringField "bugtracker" xs
         executable = optStringField "executable" xs
-        sourcedir = optStringField "sourcedir" xs
+        sourcedir = fromMaybe "src" $ optStringField "sourcedir" xs
         builddir = optStringField "builddir" xs
         outputdir = optStringField "outputdir" xs
         depends = stringArrayField "depends" xs
-        
-        sourcedirPath = fromMaybe "src" sourcedir
 
         refineModuleString : String -> String
         refineModuleString xs =
@@ -163,9 +161,10 @@ parseConfig xs = do
                 (unpack $ dropLast 4 xs)
 
     modules <- primIO $ do
-        changeDir sourcedirPath
-        map refineModuleString <$> getFileNames "**/*.idr"
-
+        changeDir sourcedir
+        fileNames <- getFileNames "**/*.idr"
+        changeDir ".."
+        pure $ map refineModuleString fileNames
     sources <- sourcesField xs
 
     pure $ MkConfig

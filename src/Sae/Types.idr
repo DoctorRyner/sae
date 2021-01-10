@@ -41,6 +41,7 @@ public export
 record Config where
     constructor MkConfig
     package,
+    sourcedir,
     version : String
     target,
     authors,
@@ -52,7 +53,6 @@ record Config where
     sourceloc,
     bugtracker,
     executable,
-    sourcedir,
     builddir,
     outputdir : Maybe String
     depends,
