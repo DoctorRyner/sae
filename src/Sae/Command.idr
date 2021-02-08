@@ -24,6 +24,8 @@ commandToString = \case
     Help => "help: Show usage info"
     GenerateIpkg => "generate-ipkg: Generates ipkg file"
     FetchDeps => "fetch: Fetch dependencies"
+    Build => "build: Build project"
+    Install => "install: Register package globally in the system"
 
 usageInfo : String
 usageInfo =
@@ -71,9 +73,23 @@ fetchDeps cfg = do
     changeDir saeDir
     traverse_ fetchSource cfg.sources
 
+build : Config -> IO ()
+build cfg = do
+    generateIpkg cfg
+    system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
+    pure ()
+
+install : Config -> IO ()
+install cfg = do
+    build cfg
+    system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
+    pure ()
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg = generateIpkg cfg
 evalCommand cfg FetchDeps = fetchDeps cfg
+evalCommand cfg Build = build cfg
+evalCommand cfg Install = install cfg
 evalCommand _ _ = pure ()
 
 evalConfig : Command -> Either ConfigError Config -> IO ()

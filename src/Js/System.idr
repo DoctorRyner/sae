@@ -10,7 +10,7 @@ export
 getArgs : IO (List String)
 getArgs = toList <$> primIO prim__getArgs
 
-%foreign (node "str => {try {require('child_process').execSync(str); return 0} catch(e) {return e.status}}")
+%foreign (node "str => require('shelljs').exec(str).code")
 prim__system : String -> PrimIO Double
 
 export

@@ -7,10 +7,11 @@
   "scripts": {
     "build": "idris2 --build sae.ipkg",
     "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
-    "test": "yarn release && cd example && node ../build/exec/index.js fetch"
+    "test": "yarn release && cd example && node ../build/exec/index.js install"
   },
   "dependencies": {
     "glob": "^7.1.6",
-    "js-yaml": "^4.0.0"
+    "js-yaml": "^4.0.0",
+    "shelljs": "^0.8.4"
   }
 }

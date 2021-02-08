@@ -11,6 +11,8 @@ data Command
     = Help
     | GenerateIpkg
     | FetchDeps
+    | Build
+    | Install
 
 -- Config
 
