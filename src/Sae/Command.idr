@@ -58,12 +58,13 @@ fetchSource src = do
         cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
 
-    system cloneCmd
-    changeDir folderName
-    system changeVersionCmd
-    changeDir ".."
-    
-    pure ()
+    if !(system cloneCmd) == 0
+        then do
+            changeDir folderName
+            system changeVersionCmd
+            changeDir ".."
+            pure ()
+        else pure ()
 
 fetchDeps : Config -> IO ()
 fetchDeps cfg = do
