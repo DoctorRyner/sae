@@ -4,6 +4,7 @@ import Data.String.Extra
 import Data.Maybe
 import Js.Console
 import Js.Glob
+import Js.System
 import Sae.Config
 import Sae.Info
 import Sae.Ipkg
@@ -15,12 +16,14 @@ availableCommands : List Command
 availableCommands =
     [ Help
     , GenerateIpkg
+    , FetchDeps
     ]
 
 commandToString : Command -> String
 commandToString = \case
     Help => "help: Show usage info"
     GenerateIpkg => "generate-ipkg: Generates ipkg file"
+    FetchDeps => "fetch: Fetch dependencies"
 
 usageInfo : String
 usageInfo =
@@ -49,8 +52,29 @@ generateIpkg cfg = do
             when (not $ cfg.package ++ ".ipkg" `elem` ipkgFiles) $
                 putStrLn $ "Generated: " ++ ipkgPath
 
+fetchSource : Source -> IO ()
+fetchSource src = do
+    let folderName = src.name ++ "-" ++ src.version
+        cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
+        changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
+
+    system cloneCmd
+    changeDir folderName
+    system changeVersionCmd
+    changeDir ".."
+    
+    pure ()
+
+fetchDeps : Config -> IO ()
+fetchDeps cfg = do
+    saeDir <- (++ "/.sae/") <$> getHomeDir
+    createDir saeDir
+    changeDir saeDir
+    traverse_ fetchSource cfg.sources
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg = generateIpkg cfg
+evalCommand cfg FetchDeps = fetchDeps cfg
 evalCommand _ _ = pure ()
 
 evalConfig : Command -> Either ConfigError Config -> IO ()

@@ -85,11 +85,9 @@ jsonToSource (JObject xs) = do
 
     name <- reqStringField "name" xs
     url <- reqStringField "url" xs
+    version <- reqStringField "version" xs
 
-    let version = optStringField "version" xs
-        commit = optStringField "commit" xs
-
-    pure $ MkSource {name, url, version, commit}
+    pure $ MkSource {name, url, version}
 jsonToSource _ = throw $ TypeMismatch "sources" "another type"
 
 isJsonSource : JSON -> Bool
@@ -206,9 +204,9 @@ readConfig = runExceptIO mkConfig
 
 export
 configErrorToString : ConfigError -> String
-configErrorToString (UnknownField field) = "Unknown field: " ++ field
+configErrorToString (UnknownField field) = "Unknown field: " ++ show field
 configErrorToString (TypeMismatch field expectedType) =
-    "Type mismatch for the field " ++ field ++ ", expected " ++ expectedType
-configErrorToString (RequiredFieldMissing field) = "Missing required " ++ field ++ " field"
+    "Type mismatch for the field " ++ field ++ ", expected " ++ show expectedType
+configErrorToString (RequiredFieldMissing field) = "Missing required " ++ show field ++ " field"
 configErrorToString ConfigFileShouldBeObject = "Config file should be an object"
 configErrorToString (Custom s) = s

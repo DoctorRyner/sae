@@ -5,5 +5,7 @@ import public Sae.Types
 
 export
 argsToCommand : List String -> Command
-argsToCommand ("generate-ipkg"::_) = GenerateIpkg
-argsToCommand _ = Help
+argsToCommand = \case
+    "generate-ipkg"::_ => GenerateIpkg
+    "fetch"::_ => FetchDeps
+    _ => Help

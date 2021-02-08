@@ -7,4 +7,4 @@ depends:
 sources:
 - name: idris-js
   url: https://github.com/DoctorRyner/idris-js
-  commit: b07ad742fb56f28d693f8fbbcdf900a6e8911b96
+  version: 77c91eedced72c37dfd97add4d14433aece10e68

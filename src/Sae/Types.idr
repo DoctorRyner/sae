@@ -10,11 +10,7 @@ public export
 data Command
     = Help
     | GenerateIpkg
-
-public export
-Show Command where
-    show Help = "Help"
-    show GenerateIpkg = "GenerateConfig"
+    | FetchDeps
 
 -- Config
 
@@ -22,9 +18,8 @@ public export
 record Source where
     constructor MkSource
     name,
-    url : String
-    commit,
-    version : Maybe String
+    url,
+    version : String
 
 public export
 Show Source where
@@ -34,8 +29,7 @@ Show Source where
                 ", "
                 [ "name: " ++ source.name
                 , "url: " ++ source.url
-                , "version: " ++ show source.version
-                , "commit: " ++ show source.commit
+                , "version: " ++ source.version
                 ]
             ++ "}"
 
