@@ -85,7 +85,6 @@ build cfg = do
 install : Config -> IO ()
 install cfg = do
     putStrLn $ "package: " ++ cfg.package ++ "-" ++ cfg.version
-    build cfg
     system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
     pure ()
 
