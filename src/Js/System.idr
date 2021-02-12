@@ -31,8 +31,8 @@ getArgs = toList <$> primIO prim__getArgs
 prim__systemShort : String -> PrimIO Double
 
 export
-systemShort : String -> IO Double
-systemShort = primIO . prim__systemShort
+systemLegacy : String -> IO Double
+systemLegacy = primIO . prim__systemShort
 
 %foreign (node "str => require('child_process').execSync(str, {stdio: 'inherit'})")
 prim__system : String -> PrimIO Double

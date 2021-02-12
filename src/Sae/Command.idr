@@ -62,7 +62,7 @@ fetchSource src =
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
     in
     when (not !(doesFileExist folderName)) $ do
-        when (!(systemShort cloneCmd) == 0) $ do
+        when (!(systemLegacy cloneCmd) == 0) $ do
             changeDir folderName
             system changeVersionCmd
             changeDir ".."
