@@ -6,9 +6,9 @@ depends:
 - js-0.0.1
 
 sources:
-- name: idris-js
+- name: js
   url: https://github.com/DoctorRyner/idris-js
-  version: 5208daf867086d2bb377a4333fd8373eb596fbe0
-- name: idris-react
+  version: 2c9c14e7704748ab3cde9a0c9492439d2f99a4dc
+- name: react
   url: https://github.com/DoctorRyner/idris-react
-  version: 157dc31ae4acf1284ed8bf12ac50689f2fad6aba
+  version: 6c04fa450a03280a1d298e324a02b7b96ca4c354

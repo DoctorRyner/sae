@@ -62,7 +62,7 @@ fetchSource src =
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
     in
     when (not !(doesFileExist folderName)) $ do
-        when (!(system cloneCmd) == 0) $ do
+        when (!(systemShort cloneCmd) == 0) $ do
             changeDir folderName
             system changeVersionCmd
             changeDir ".."
@@ -78,12 +78,12 @@ fetchDeps cfg = do
 build : Config -> IO ()
 build cfg = do
     generateIpkg cfg
-    putStrLn $ "package: " ++ cfg.package ++ "-" ++ cfg.version
     system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
     pure ()
 
 install : Config -> IO ()
 install cfg = do
+    putStrLn $ "package: " ++ cfg.package ++ "-" ++ cfg.version
     build cfg
     system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
     pure ()

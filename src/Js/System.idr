@@ -28,6 +28,13 @@ getArgs = toList <$> primIO prim__getArgs
         var syncFunction = syncPromise(asyncFunction)
         return syncFunction()
     }")
+prim__systemShort : String -> PrimIO Double
+
+export
+systemShort : String -> IO Double
+systemShort = primIO . prim__systemShort
+
+%foreign (node "str => require('child_process').execSync(str, {stdio: 'inherit'})")
 prim__system : String -> PrimIO Double
 
 export
