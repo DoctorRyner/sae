@@ -15,8 +15,9 @@ import System.File
 availableCommands : List Command
 availableCommands =
     [ Help
-    , GenerateIpkg
-    , FetchDeps
+    , BuildDeps
+    , Build
+    , Install
     ]
 
 commandToString : Command -> String
@@ -26,7 +27,7 @@ commandToString = \case
     FetchDeps => "fetch: Fetch dependencies"
     BuildDeps => "build-deps: Build dependencies"
     Build => "build: Build project"
-    Install => "install: Register package globally in the system"
+    Install => "install: Register package in the system"
 
 usageInfo : String
 usageInfo =
