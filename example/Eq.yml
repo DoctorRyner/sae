@@ -3,11 +3,12 @@ version: 0.0.1
 
 depends:
 - contrib
+- js-0.0.1
 
 sources:
 - name: idris-js
   url: https://github.com/DoctorRyner/idris-js
-  version: 77c91eedced72c37dfd97add4d14433aece10e68
+  version: 5208daf867086d2bb377a4333fd8373eb596fbe0
 - name: idris-react
   url: https://github.com/DoctorRyner/idris-react
-  version: 44341d1d821375bb11ceb8ded2cf66d3579e5c01
+  version: 157dc31ae4acf1284ed8bf12ac50689f2fad6aba

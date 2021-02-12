@@ -11,6 +11,7 @@ data Command
     = Help
     | GenerateIpkg
     | FetchDeps
+    | BuildDeps
     | Build
     | Install
 

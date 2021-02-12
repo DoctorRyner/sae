@@ -24,6 +24,7 @@ commandToString = \case
     Help => "help: Show usage info"
     GenerateIpkg => "generate-ipkg: Generates ipkg file"
     FetchDeps => "fetch: Fetch dependencies"
+    BuildDeps => "build-deps: Build dependencies"
     Build => "build: Build project"
     Install => "install: Register package globally in the system"
 
@@ -55,27 +56,29 @@ generateIpkg cfg = do
                 putStrLn $ "Generated: " ++ ipkgPath
 
 fetchSource : Source -> IO ()
-fetchSource src = do
+fetchSource src =
     let folderName = src.name ++ "-" ++ src.version
         cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
-
-    when (!(system cloneCmd) == 0) $ do
-        changeDir folderName
-        system changeVersionCmd
-        changeDir ".."
-        pure ()
+    in
+    when (not !(doesFileExist folderName)) $ do
+        when (!(system cloneCmd) == 0) $ do
+            changeDir folderName
+            system changeVersionCmd
+            changeDir ".."
+            pure ()
 
 fetchDeps : Config -> IO ()
 fetchDeps cfg = do
-    saeDir <- (++ "/.sae/") <$> getHomeDir
-    createDir saeDir
-    changeDir saeDir
+    depsDir <- (++ "/.sae/") <$> getHomeDir
+    createDir depsDir
+    changeDir depsDir
     traverse_ fetchSource cfg.sources
 
 build : Config -> IO ()
 build cfg = do
     generateIpkg cfg
+    putStrLn $ "package: " ++ cfg.package ++ "-" ++ cfg.version
     system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
     pure ()
 
@@ -85,9 +88,36 @@ install cfg = do
     system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
     pure ()
 
+mutual
+    buildSource : Source -> IO ()
+    buildSource src = do
+        let folderName = src.name ++ "-" ++ src.version
+        changeDir folderName
+        case !readConfig of
+            Right cfg => do
+                let pkgName = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
+                buildDeps cfg
+                changeDir folderName
+                idrisPkgsDir <- (++ ("/.idris2/idris2-" ++ supportedIdrisVersion ++ "/")) <$> getHomeDir
+                let installedPkgDir = idrisPkgsDir ++ pkgName
+                when (not !(doesFileExist installedPkgDir)) $ do
+                    install cfg
+            Left err => putStrLn $ configErrorToString err
+        changeDir ".."
+        pure ()
+
+    buildDeps : Config -> IO ()
+    buildDeps cfg = do
+        fetchDeps cfg
+        depsDir <- (++ "/.sae/") <$> getHomeDir
+        changeDir depsDir
+        fetchDeps cfg
+        traverse_ buildSource cfg.sources
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg = generateIpkg cfg
 evalCommand cfg FetchDeps = fetchDeps cfg
+evalCommand cfg BuildDeps = buildDeps cfg
 evalCommand cfg Build = build cfg
 evalCommand cfg Install = install cfg
 evalCommand _ _ = pure ()

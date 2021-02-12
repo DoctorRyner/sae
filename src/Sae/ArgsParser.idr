@@ -8,6 +8,7 @@ argsToCommand : List String -> Command
 argsToCommand = \case
     "generate-ipkg"::_ => GenerateIpkg
     "fetch"::_ => FetchDeps
+    "build-deps"::_ => BuildDeps
     "build"::_ => Build
     "install"::_ => Install
     _ => Help
