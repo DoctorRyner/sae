@@ -1,5 +1,6 @@
 module Sae.Command
 
+import Data.String
 import Data.String.Extra
 import Data.Maybe
 import Data.List
@@ -20,6 +21,7 @@ availableCommands =
     , ReinstallDeps
     , Build
     , Install
+    , New ""
     ]
 
 commandToString : Command -> String
@@ -31,6 +33,7 @@ commandToString = \case
     ReinstallDeps => "reinstall-deps        Forcibly reinstall deps"
     Build         => "build                 Build project"
     Install       => "install               Register package in the system"
+    New _         => "new                   Create a sae project"
 
 usageInfo : String
 usageInfo =
@@ -122,6 +125,32 @@ mutual
         system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
         pure ()
 
+mkEqFile : String -> String
+mkEqFile projectName = join "\n"
+    [ "package: " ++ projectName
+    , "version: 0.0.1\n"
+    , "depends: []\n"
+    , "sources: []"
+    ]
+
+basicMainFile : String
+basicMainFile = unlines
+    ["module Main"
+    , ""
+    , "main : IO ()"
+    , "main = putStrLn " ++ show "Now, I'm gonna solve all of the equations!"
+    ]
+
+new : String -> IO ()
+new projectName = do
+    createDir projectName
+    changeDir projectName
+    createDir "src"
+    writeFile "Eq.yml" $ mkEqFile projectName
+    writeFile "src/Main.idr" basicMainFile
+    writeFile ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
+    pure ()
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg
 evalCommand cfg FetchDeps     = fetchDeps cfg
@@ -129,7 +158,7 @@ evalCommand cfg InstallDeps   = installDeps False cfg
 evalCommand cfg ReinstallDeps = installDeps True cfg
 evalCommand cfg Build         = build cfg
 evalCommand cfg Install       = install cfg
-evalCommand cfg Help          = pure () -- Will never happen
+evalCommand _   _             = pure () -- Will never happen
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
 evalConfig _ (Left configError) = putStrLn $ configErrorToString configError
@@ -138,4 +167,5 @@ evalConfig cmd (Right cfg) = evalCommand cfg cmd
 export
 runCommand : Command -> IO ()
 runCommand Help = log usageInfo
+runCommand (New projectName) = new projectName
 runCommand cmd = evalConfig cmd !readConfig

@@ -15,6 +15,7 @@ data Command
     | ReinstallDeps
     | Build
     | Install
+    | New String
 
 -- Config
 
