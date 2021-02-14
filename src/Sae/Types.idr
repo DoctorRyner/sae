@@ -16,6 +16,7 @@ data Command
     | Build
     | Install
     | Release
+    | Run (List String)
     | New String
 
 -- Config

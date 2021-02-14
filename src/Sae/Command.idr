@@ -34,6 +34,7 @@ commandToString = \case
     Build         => "build                 Build project"
     Install       => "install               Register package in the system"
     Release       => "release               Compile project into a file"
+    Run _         => "run                   Run compiled file"
     New _         => "new                   Create a sae project"
 
 usageInfo : String
@@ -129,8 +130,10 @@ mutual
 mkEqFile : String -> String
 mkEqFile projectName = join "\n"
     [ "package: " ++ projectName
-    , "version: 0.0.1\n"
-    , "depends: []\n"
+    , "version: 0.0.1"
+    , ""
+    , "depends: []"
+    , ""
     , "sources: []"
     ]
 
@@ -173,6 +176,19 @@ release cfg = do
 
     putStrLn outputMsg
 
+run : List String -> Config -> IO ()
+run args cfg = do
+    let outputFileName = if elem cfg.target ["javascript", "node"] then "index.js" else cfg.package
+        projectPath = fromMaybe "" !currentDir
+        outputFilePath = projectPath ++ (fromMaybe "/build" cfg.builddir) ++ "/exec/" ++ outputFileName
+        runCmd =
+            if cfg.target == "node"
+            then "node " ++ outputFilePath ++ " " ++ join " " args
+            else "sh " ++ outputFilePath ++ " " ++ join " " args
+
+    system runCmd
+    pure ()
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg
 evalCommand cfg FetchDeps     = fetchDeps cfg
@@ -181,6 +197,7 @@ evalCommand cfg ReinstallDeps = installDeps True cfg
 evalCommand cfg Build         = build cfg
 evalCommand cfg Install       = install cfg
 evalCommand cfg Release       = release cfg
+evalCommand cfg (Run args)    = run args cfg
 evalCommand _   _             = pure () -- Will never happen
 
 evalConfig : Command -> Either ConfigError Config -> IO ()

@@ -13,5 +13,6 @@ argsToCommand = \case
     "build"         ::_    => Build
     "install"       ::_    => Install
     "release"       ::_    => Release
+    "run"           ::xs   => Run xs
     "new"           ::x::_ => New x
     _                      => Help
