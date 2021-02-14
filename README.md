@@ -4,4 +4,4 @@ A build tool for Idris 2 that allows you to manage dependencies and projects
 
 # TODO
 
-Fetch js dependencies before building
+- [ ] Detect Idris version instead of picking the latest

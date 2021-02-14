@@ -30,7 +30,7 @@ commandToString = \case
     GenerateIpkg  => "generate-ipkg         Generates ipkg file"
     FetchDeps     => "fetch                 Fetch dependencies"
     InstallDeps   => "install-deps          Install dependencies"
-    ReinstallDeps => "reinstall-deps        Forcibly reinstall deps"
+    ReinstallDeps => "reinstall-deps        Forcibly reinstall dependencies"
     Build         => "build                 Build project"
     Install       => "install               Register package in the system"
     Release       => "release               Compile project into a file"
@@ -60,8 +60,8 @@ generateIpkg cfg =
             when (not $ cfg.package ++ ".ipkg" `elem` ipkgFiles) $
                 putStrLn $ "Generated: " ++ ipkgPath
 
-fetchSource : Source -> IO ()
-fetchSource src =
+fetchSource : Config -> Source -> IO ()
+fetchSource cfg src =
     let folderName = src.name ++ "-" ++ src.version
         cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
@@ -69,6 +69,10 @@ fetchSource src =
         when (!(systemLegacy cloneCmd) == 0) $ do
             changeDir folderName
             system changeVersionCmd
+            when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
+                yarnVersionCmdResult <- system "yarn --version"
+                system $ if True then "yarn" else "npm i"
+                pure ()
             changeDir ".."
             pure ()
 
@@ -76,10 +80,11 @@ fetchDeps : Config -> IO ()
 fetchDeps cfg = do
     let saeDir = !getHomeDir ++ "/.sae/"
         depsDir = saeDir ++ "deps/"
+
     createDir saeDir
     createDir depsDir
     changeDir depsDir
-    traverse_ fetchSource cfg.sources
+    traverse_ (fetchSource cfg) cfg.sources
 
 mutual
     installSource : Bool -> Source -> IO ()
