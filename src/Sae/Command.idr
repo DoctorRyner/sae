@@ -22,8 +22,6 @@ availableCommands =
     , Install
     ]
 
--- TODO resolve language versions conflicts
-
 commandToString : Command -> String
 commandToString = \case
     Help          => "help                  Show usage info"
