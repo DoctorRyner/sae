@@ -21,6 +21,8 @@ availableCommands =
     , ReinstallDeps
     , Build
     , Install
+    , Release
+    , Run []
     , New ""
     ]
 
