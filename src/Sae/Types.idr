@@ -15,6 +15,7 @@ data Command
     | ReinstallDeps
     | Build
     | Install
+    | Release
     | New String
 
 -- Config
@@ -43,8 +44,8 @@ record Config where
     constructor MkConfig
     package,
     sourcedir,
-    version : String
     target,
+    version : String
     authors,
     maintainers,
     license,

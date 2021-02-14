@@ -33,6 +33,7 @@ commandToString = \case
     ReinstallDeps => "reinstall-deps        Forcibly reinstall deps"
     Build         => "build                 Build project"
     Install       => "install               Register package in the system"
+    Release       => "release               Compile project into a file"
     New _         => "new                   Create a sae project"
 
 usageInfo : String
@@ -151,6 +152,27 @@ new projectName = do
     writeFile ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
     pure ()
 
+release : Config -> IO ()
+release cfg = do
+    build cfg
+
+    let outputFileName = if elem cfg.target ["javascript", "node"] then "index.js" else cfg.package
+        releaseCmd = join " "
+            [ "idris2"
+            , cfg.sourcedir ++ "/Main.idr"
+            , "--codegen " ++ cfg.target
+            , concatMap (" -p " ++) $ map replaceDotsWithDashes cfg.depends
+            , "-o " ++ outputFileName
+            ]
+        releaseCmdResultCode = !(system releaseCmd)
+        projectPath = fromMaybe "" !currentDir
+        outputMsg =
+            if releaseCmdResultCode == 0
+            then "Compiled: " ++ projectPath ++ (fromMaybe "/build" cfg.builddir) ++ "/exec/" ++ outputFileName
+            else "ERROR(" ++ show releaseCmdResultCode ++ "): Couldn't built " ++ cfg.package
+
+    putStrLn outputMsg
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg
 evalCommand cfg FetchDeps     = fetchDeps cfg
@@ -158,6 +180,7 @@ evalCommand cfg InstallDeps   = installDeps False cfg
 evalCommand cfg ReinstallDeps = installDeps True cfg
 evalCommand cfg Build         = build cfg
 evalCommand cfg Install       = install cfg
+evalCommand cfg Release       = release cfg
 evalCommand _   _             = pure () -- Will never happen
 
 evalConfig : Command -> Either ConfigError Config -> IO ()

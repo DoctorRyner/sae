@@ -133,7 +133,7 @@ parseConfig xs = do
 
     let package     = !(reqStringField "package" xs)
         version     = !(reqStringField "version" xs)
-        target      = optStringField "target" xs
+        target      = fromMaybe "chez" $ optStringField "target" xs
         authors     = optStringField "authors" xs
         maintainers = optStringField "maintainers" xs
         license     = optStringField "license" xs

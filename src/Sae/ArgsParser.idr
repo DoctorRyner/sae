@@ -12,5 +12,6 @@ argsToCommand = \case
     "reinstall-deps"::_    => ReinstallDeps
     "build"         ::_    => Build
     "install"       ::_    => Install
+    "release"       ::_    => Release
     "new"           ::x::_ => New x
     _                      => Help

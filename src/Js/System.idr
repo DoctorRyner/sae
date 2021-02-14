@@ -34,7 +34,13 @@ export
 systemLegacy : String -> IO Double
 systemLegacy = primIO . prim__systemShort
 
-%foreign (node "str => require('child_process').execSync(str, {stdio: 'inherit'})")
+%foreign
+    (node "str => {
+        try {
+            require('child_process').execSync(str, {stdio: 'inherit'})
+            return 0
+        } catch (err) {return err.status}
+    }")
 prim__system : String -> PrimIO Double
 
 export
