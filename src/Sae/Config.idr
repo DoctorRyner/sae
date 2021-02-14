@@ -133,7 +133,6 @@ parseConfig xs = do
 
     let package     = !(reqStringField "package" xs)
         version     = !(reqStringField "version" xs)
-        langVersion = fromMaybe defaultIdrisVersion $ optStringField "langVersion" xs
         target      = optStringField "target" xs
         authors     = optStringField "authors" xs
         maintainers = optStringField "maintainers" xs
@@ -163,8 +162,8 @@ parseConfig xs = do
     sources <- sourcesField xs
 
     pure $ MkConfig
-        { package, version, langVersion, target, authors, maintainers, license, brief, readme
-        , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
+        { package, version, target, authors, maintainers, license, brief, readme, homepage
+        , sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
         , modules, sources
         }
 

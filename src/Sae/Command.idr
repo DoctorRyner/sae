@@ -2,6 +2,7 @@ module Sae.Command
 
 import Data.String.Extra
 import Data.Maybe
+import Data.List
 import Js.Console
 import Js.Glob
 import Js.System
@@ -20,6 +21,8 @@ availableCommands =
     , Build
     , Install
     ]
+
+-- TODO resolve language versions conflicts
 
 commandToString : Command -> String
 commandToString = \case
@@ -81,8 +84,9 @@ mutual
         case !readConfig of
             Right cfg => do
                 let pkgName = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
-                    idrisPkgsDir = !getHomeDir ++ "/.idris2/idris2-" ++ cfg.langVersion ++ "/"
-                    installedPkgDir = idrisPkgsDir ++ pkgName
+                    idrisPkgsByLangVersion = sort !(getFileNames $ !getHomeDir ++ "/.idris2/idris2-*")
+                    idrisPkgsDir = fromMaybe "Can't find idris pkgs folder" $ last' idrisPkgsByLangVersion
+                    installedPkgDir = idrisPkgsDir ++ "/" ++ pkgName
                 installDeps shouldRebuild cfg
                 changeDir folderName
                 installedPkgDirDoesntExist <- not <$> doesFileExist installedPkgDir
@@ -119,13 +123,13 @@ mutual
         pure ()
 
 evalCommand : Config -> Command -> IO ()
-evalCommand cfg GenerateIpkg = generateIpkg cfg
-evalCommand cfg FetchDeps = fetchDeps cfg
-evalCommand cfg InstallDeps = installDeps False cfg
+evalCommand cfg GenerateIpkg  = generateIpkg cfg
+evalCommand cfg FetchDeps     = fetchDeps cfg
+evalCommand cfg InstallDeps   = installDeps False cfg
 evalCommand cfg ReinstallDeps = installDeps True cfg
-evalCommand cfg Build = build cfg
-evalCommand cfg Install = install cfg
-evalCommand _ _ = pure ()
+evalCommand cfg Build         = build cfg
+evalCommand cfg Install       = install cfg
+evalCommand cfg Help          = pure () -- Will never happen
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
 evalConfig _ (Left configError) = putStrLn $ configErrorToString configError

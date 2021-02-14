@@ -42,7 +42,6 @@ record Config where
     constructor MkConfig
     package,
     sourcedir,
-    langVersion,
     version : String
     target,
     authors,
@@ -68,7 +67,6 @@ Show Config where
                 "\n    , "
                 [ "package: " ++ show config.package
                 , "version: " ++ show config.version
-                , "langVersion: " ++ show config.langVersion
                 , "target: " ++ show config.target
                 , "authors: " ++ show config.authors
                 , "maintainers: " ++ show config.maintainers
