@@ -10,6 +10,7 @@ import Js.Glob
 import Js.Nullable
 import Js.Yaml
 import Sae.Types
+import Sae.Info
 import System.Directory
 import System.File
 import System
@@ -25,6 +26,7 @@ stringFields : List String
 stringFields =
     [ "package"
     , "version"
+    , "langVersion"
     , "target"
     , "authors"
     , "maintainers"
@@ -75,7 +77,6 @@ checkSourceField : (String, JSON) -> ConfigIO ()
 checkSourceField (field, jsonVal) = do
     when (not $ elem field sourceFields) $
         throw $ UnknownField field
-
     when (elem field sourceFields && not (isJsonString jsonVal)) $
         throw $ TypeMismatch field "string"
 
@@ -83,8 +84,8 @@ jsonToSource : JSON -> ConfigIO Source
 jsonToSource (JObject xs) = do
     traverse_ (\field => checkSourceField field) xs
 
-    name <- reqStringField "name" xs
-    url <- reqStringField "url" xs
+    name    <- reqStringField "name" xs
+    url     <- reqStringField "url" xs
     version <- reqStringField "version" xs
 
     pure $ MkSource {name, url, version}
@@ -110,10 +111,8 @@ checkField : (String, JSON) -> ConfigIO ()
 checkField (field, jsonVal) = do
     when (not $ elem field allowedFields) $
         throw $ UnknownField field
-
     when (elem field stringFields && not (isJsonString jsonVal)) $
         throw $ TypeMismatch field "string"
-
     when (elem field stringListFields && not (isJsonArrayOfStrings jsonVal)) $
         throw $ TypeMismatch field "string array"
 
@@ -132,23 +131,23 @@ parseConfig : List (String, JSON) -> ConfigIO Config
 parseConfig xs = do
     traverse_ (\field => checkField field) xs
 
-    package <- reqStringField "package" xs
-    version <- reqStringField "version" xs
-
-    let target = optStringField "target" xs
-        authors = optStringField "authors" xs
+    let package     = !(reqStringField "package" xs)
+        version     = !(reqStringField "version" xs)
+        langVersion = fromMaybe defaultIdrisVersion $ optStringField "langVersion" xs
+        target      = optStringField "target" xs
+        authors     = optStringField "authors" xs
         maintainers = optStringField "maintainers" xs
-        license = optStringField "license" xs
-        brief = optStringField "brief" xs
-        readme = optStringField "readme" xs
-        homepage = optStringField "homepage" xs
-        sourceloc = optStringField "sourceloc" xs
-        bugtracker = optStringField "bugtracker" xs
-        executable = optStringField "executable" xs
-        sourcedir = fromMaybe "src" $ optStringField "sourcedir" xs
-        builddir = optStringField "builddir" xs
-        outputdir = optStringField "outputdir" xs
-        depends = stringArrayField "depends" xs
+        license     = optStringField "license" xs
+        brief       = optStringField "brief" xs
+        readme      = optStringField "readme" xs
+        homepage    = optStringField "homepage" xs
+        sourceloc   = optStringField "sourceloc" xs
+        bugtracker  = optStringField "bugtracker" xs
+        executable  = optStringField "executable" xs
+        sourcedir   = fromMaybe "src" $ optStringField "sourcedir" xs
+        builddir    = optStringField "builddir" xs
+        outputdir   = optStringField "outputdir" xs
+        depends     = stringArrayField "depends" xs
 
         refineModuleString : String -> String
         refineModuleString xs =
@@ -164,24 +163,9 @@ parseConfig xs = do
     sources <- sourcesField xs
 
     pure $ MkConfig
-        { package = package
-        , version = version
-        , target = target
-        , authors = authors
-        , maintainers = maintainers
-        , license = license
-        , brief = brief
-        , readme = readme
-        , homepage = homepage
-        , sourceloc = sourceloc
-        , bugtracker = bugtracker
-        , executable = executable
-        , sourcedir = sourcedir
-        , builddir = builddir
-        , outputdir = outputdir
-        , depends = depends
-        , modules = modules
-        , sources = sources
+        { package, version, langVersion, target, authors, maintainers, license, brief, readme
+        , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
+        , modules, sources
         }
 
 mkConfig : ConfigIO Config
@@ -190,7 +174,6 @@ mkConfig = do
         case !(primIO $ readFile "Eq.yml") of
             Left err => throw $ Custom $ show err
             Right x => pure $ yamlToJson x
-
     objectContent <-
         case parse eqFileContent of
             Just (JObject xs) => pure xs
@@ -204,9 +187,10 @@ readConfig = runExceptIO mkConfig
 
 export
 configErrorToString : ConfigError -> String
-configErrorToString (UnknownField field) = "Unknown field: " ++ show field
-configErrorToString (TypeMismatch field expectedType) =
-    "Type mismatch for the field " ++ field ++ ", expected " ++ show expectedType
-configErrorToString (RequiredFieldMissing field) = "Missing required " ++ show field ++ " field"
-configErrorToString ConfigFileShouldBeObject = "Config file should be an object"
-configErrorToString (Custom s) = s
+configErrorToString = \case
+    UnknownField field              => "Unknown field: " ++ show field
+    TypeMismatch field expectedType => "Type mismatch for the field " ++ field ++ ", expected "
+                                                                               ++ show expectedType
+    RequiredFieldMissing field      => "Missing required " ++ show field ++ " field"
+    ConfigFileShouldBeObject        => "Config file should be an object"
+    Custom s                        => s

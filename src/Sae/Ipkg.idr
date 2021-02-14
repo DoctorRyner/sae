@@ -4,15 +4,12 @@ import Data.String.Extra
 import Data.List
 import Sae.Types
 
-infix 10 #
-
 (#) : a -> b -> (a, b)
 (#) = (,)
 
 optField : (String, Maybe String) -> String
-optField = \case
-    (name, Just x) => name ++ " = " ++ x ++ "\n"
-    _ => ""
+optField (name, Just x) = name ++ " = " ++ x ++ "\n"
+optField _              = ""
 
 export
 replaceDotsWithDashes : String -> String

@@ -7,6 +7,4 @@ import Sae.Config
 import System
 
 main : IO ()
-main = do
-    args <- drop 1 <$> getArgs
-    runCommand $ argsToCommand args
+main = runCommand $ argsToCommand $ drop 1 !getArgs
