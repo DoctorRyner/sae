@@ -95,10 +95,8 @@ mutual
         changeDir folderName
         case !readConfig of
             Right cfg => do
-                let pkgName = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
-                    idrisPkgsByLangVersion = sort !(getFileNames $ !getHomeDir ++ "/.idris2/idris2-*")
-                    idrisPkgsDir = fromMaybe "Can't find idris pkgs folder" $ last' idrisPkgsByLangVersion
-                    installedPkgDir = idrisPkgsDir ++ "/" ++ pkgName
+                let pkgName         = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
+                    installedPkgDir = cfg.pkgsDir ++ "/" ++ pkgName
                 installDeps shouldRebuild cfg
                 changeDir folderName
                 installedPkgDirDoesntExist <- not <$> doesFileExist installedPkgDir
@@ -205,7 +203,7 @@ evalCommand cfg Build         = build cfg
 evalCommand cfg Install       = install cfg
 evalCommand cfg Release       = release cfg
 evalCommand cfg (Run args)    = run args cfg
-evalCommand _   _             = pure () -- Will never happen
+evalCommand _   _             = putStrLn "Impossible happened, there is an unhandled case in the runCommand function"
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
 evalConfig _ (Left configError) = putStrLn $ configErrorToString configError

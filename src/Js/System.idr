@@ -47,6 +47,19 @@ export
 system : String -> IO Double
 system = primIO . prim__system
 
+%foreign
+    (node "str => {
+        try {
+            const result = require('child_process').execSync(str)
+            return result.toString()
+        } catch (err) {return 'Idris 2, version 0.3.0'}
+    }")
+prim__systemStr : String -> PrimIO String
+
+export
+systemStr : String -> IO String
+systemStr = primIO . prim__systemStr
+
 %foreign (node "() => process.env.HOME")
 prim__getHomeDir : PrimIO String
 

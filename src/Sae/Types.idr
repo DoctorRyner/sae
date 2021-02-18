@@ -46,6 +46,7 @@ record Config where
     package,
     sourcedir,
     target,
+    pkgsDir,
     version : String
     authors,
     maintainers,
@@ -70,6 +71,7 @@ Show Config where
                 "\n    , "
                 [ "package: " ++ show config.package
                 , "version: " ++ show config.version
+                , "pkgsDir: " ++ show config.pkgsDir
                 , "target: " ++ show config.target
                 , "authors: " ++ show config.authors
                 , "maintainers: " ++ show config.maintainers
