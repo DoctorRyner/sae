@@ -71,10 +71,10 @@ fetchSource cfg src =
         when (!(systemLegacy cloneCmd) == 0) $ do
             changeDir folderName
             system changeVersionCmd
-            when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
-                yarnVersionCmdResult <- system "yarn --version"
-                system $ if True then "yarn" else "npm i"
-                pure ()
+            -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
+            --     yarnVersionCmdResult <- system "yarn --version"
+            --     system $ if True then "yarn" else "npm i"
+            --     pure ()
             changeDir ".."
             pure ()
 
