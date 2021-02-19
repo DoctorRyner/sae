@@ -18,7 +18,7 @@ I made 2 example packages that target javascript:
 * https://github.com/DoctorRyner/idris-js-example
 * https://github.com/DoctorRyner/idris-react-example
 
-Also, in this repo there is folder examples/ with a project that uses these packages
+Also, in this repo, there is folder `examples/` with a project that uses these packages
 
 # Usage
 
