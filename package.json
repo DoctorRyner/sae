@@ -7,7 +7,8 @@
   "bin": "build/exec/index.js",
   "pkg": {
     "assets": [
-      "./node_modules/*/**"
+      "./node_modules/glob",
+      "./node_modules/js-yaml"
     ]
   },
   "scripts": {
