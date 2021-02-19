@@ -132,24 +132,24 @@ parseConfig : List (String, JSON) -> ConfigIO Config
 parseConfig xs = do
     traverse_ (\field => checkField field) xs
 
-    let package      = !(reqStringField "package" xs)
-        version      = !(reqStringField "version" xs)
-        target       = fromMaybe "chez" $ optStringField "target" xs
-        authors      = optStringField "authors" xs
-        maintainers  = optStringField "maintainers" xs
-        license      = optStringField "license" xs
-        brief        = optStringField "brief" xs
-        readme       = optStringField "readme" xs
-        homepage     = optStringField "homepage" xs
-        sourceloc    = optStringField "sourceloc" xs
-        bugtracker   = optStringField "bugtracker" xs
-        executable   = optStringField "executable" xs
-        sourcedir    = fromMaybe "src" $ optStringField "sourcedir" xs
-        builddir     = optStringField "builddir" xs
-        outputdir    = optStringField "outputdir" xs
-        depends      = stringArrayField "depends" xs
-        idrisVersion = pack $ take 5 $ drop 17 $ unpack !(primIO $ systemStr "idris2 --version")
-        pkgsDir      = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ idrisVersion
+    let package     = !(reqStringField "package" xs)
+        version     = !(reqStringField "version" xs)
+        target      = fromMaybe "chez" $ optStringField "target" xs
+        authors     = optStringField "authors" xs
+        maintainers = optStringField "maintainers" xs
+        license     = optStringField "license" xs
+        brief       = optStringField "brief" xs
+        readme      = optStringField "readme" xs
+        homepage    = optStringField "homepage" xs
+        sourceloc   = optStringField "sourceloc" xs
+        bugtracker  = optStringField "bugtracker" xs
+        executable  = optStringField "executable" xs
+        sourcedir   = fromMaybe "src" $ optStringField "sourcedir" xs
+        builddir    = optStringField "builddir" xs
+        outputdir   = optStringField "outputdir" xs
+        depends     = stringArrayField "depends" xs
+        langVersion = pack $ take 5 $ drop 17 $ unpack !(primIO $ systemStr "idris2 --version")
+        pkgsDir     = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
 
         refineModuleString : String -> String
         refineModuleString xs =
@@ -165,8 +165,8 @@ parseConfig xs = do
     sources <- sourcesField xs
 
     pure $ MkConfig
-        { package, version, target, authors, maintainers, license, brief, readme, homepage
-        , sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
+        { package, version, langVersion, target, authors, maintainers, license, brief, readme
+        , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
         , modules, sources, pkgsDir
         }
 

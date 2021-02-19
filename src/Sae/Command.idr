@@ -80,11 +80,11 @@ fetchSource cfg src =
 
 fetchDeps : Config -> IO ()
 fetchDeps cfg = do
-    let saeDir = !getHomeDir ++ "/.sae/"
-        depsDir = saeDir ++ "deps/"
+    let saeDir      = !getHomeDir ++ "/.sae/"
+        depsRootDir = saeDir ++ "deps/"
+        depsDir     = depsRootDir ++ "idris-" ++ cfg.langVersion ++ "/"
 
-    createDir saeDir
-    createDir depsDir
+    traverse_ createDir [saeDir, depsRootDir, depsDir]
     changeDir depsDir
     traverse_ (fetchSource cfg) cfg.sources
 
@@ -108,7 +108,7 @@ mutual
 
     installDeps : Bool -> Config -> IO ()
     installDeps shouldRebuild cfg = do
-        let depsDir = !getHomeDir ++ "/.sae/deps/"
+        let depsDir = !getHomeDir ++ "/.sae/deps/idris-" ++ cfg.langVersion ++ "/"
         fetchDeps cfg
         changeDir depsDir
         traverse_ (installSource shouldRebuild) cfg.sources
