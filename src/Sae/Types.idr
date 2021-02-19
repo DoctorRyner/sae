@@ -43,26 +43,28 @@ Show Source where
 public export
 record Config where
     constructor MkConfig
-    package,
-    sourcedir,
-    target,
-    pkgsDir,
-    langVersion,
-    version : String
-    authors,
-    maintainers,
-    license,
-    brief,
-    readme,
-    homepage,
-    sourceloc,
-    bugtracker,
-    executable,
-    builddir,
-    outputdir : Maybe String
-    depends,
-    modules : List String
-    sources : List Source
+    -- Direct ipkg fields
+    package     : String -- Called name in ipkg
+    version     : String
+    authors     : Maybe String
+    maintainers : Maybe String
+    license     : Maybe String
+    brief       : Maybe String
+    readme      : Maybe String
+    homepage    : Maybe String
+    sourceloc   : Maybe String
+    bugtracker  : Maybe String
+    depends     : List String
+    modules     : List String -- Can't be specified manualy
+    executable  : Maybe String
+    sourcedir   : String -- optional
+    builddir    : Maybe String
+    outputdir   : Maybe String
+    -- Original fields
+    langVersion : String -- Can't be specified manualy
+    pkgsDir     : String -- Can't be specified manualy
+    target      : String -- optional
+    sources     : List Source
 
 public export
 Show Config where
