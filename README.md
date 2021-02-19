@@ -56,7 +56,7 @@ version: v0.0.1
 Where:
 
 * name — is used for distinguishing packages
-* url — can be any url, including a local file path such as `./path/to/package`
+* url — can be any url, including a local path such as `./path/to/package`
 * version — is a commit or a release tag
 
 Required fields:
