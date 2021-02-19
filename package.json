@@ -16,7 +16,7 @@
     "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
     "mk-exe": "yarn release && pkg . --target nodev14-macos-x64,nodev14-linux-x64",
     "install-mac": "yarn mk-exe && mv sae-macos /usr/local/bin/sae",
-    "test": "yarn release && cd example && node ../build/exec/index.js install-deps"
+    "install-linux": "yarn mk-exe && sudo mv sae-linux /usr/local/bin/sae"
   },
   "dependencies": {
     "glob": "^7.1.6",

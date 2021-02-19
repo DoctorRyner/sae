@@ -145,7 +145,7 @@ mkEqFile projectName = join "\n"
     , "# sources:"
     , "# - name: some-package"
     , "#   url: https://github.com/SomeAuthor/some-repository"
-    , "#   version: 0.0.1"
+    , "#   version: v0.0.1"
     ]
 
 basicMainFile : String

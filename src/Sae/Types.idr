@@ -56,7 +56,7 @@ record Config where
     sourceloc   : Maybe String
     bugtracker  : Maybe String
     depends     : List String
-    modules     : List String -- Can't be specified manualy
+    modules     : List String -- Can't be specified manually
     main        : Maybe String
     executable  : Maybe String
     sourcedir   : String -- optional
@@ -69,8 +69,8 @@ record Config where
     preclean    : Maybe String
     postclean   : Maybe String
     -- Original fields
-    langVersion : String -- Can't be specified manualy
-    pkgsDir     : String -- Can't be specified manualy
+    langVersion : String -- Can't be specified manually
+    pkgsDir     : String -- Can't be specified manually
     target      : String -- optional
     sources     : List Source
 
