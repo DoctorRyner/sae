@@ -68,7 +68,7 @@ fetchSource cfg src =
         cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
     in when (not !(doesFileExist folderName)) $ do
-        when (!(systemLegacy cloneCmd) == 0) $ do
+        when (!(system cloneCmd) == 0) $ do
             changeDir folderName
             system changeVersionCmd
             -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do

@@ -4,15 +4,23 @@
   "repository": "https://github.com/DoctorRyner/sae.git",
   "author": "DoctorRyner <drryner@icloud.com>",
   "license": "MIT",
+  "bin": "build/exec/index.js",
+  "pkg": {
+    "assets": [
+      "./node_modules/*/**"
+    ]
+  },
   "scripts": {
     "build": "idris2 --build sae.ipkg",
     "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
+    "mk-exe": "pkg . --target nodev14-macos-x64,nodev14-linux-x64",
     "test": "yarn release && cd example && node ../build/exec/index.js install-deps"
   },
   "dependencies": {
     "glob": "^7.1.6",
-    "js-yaml": "^4.0.0",
-    "string-argv": "^0.3.1",
-    "synchronized-promise": "^0.3.1"
+    "js-yaml": "^4.0.0"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.9"
   }
 }

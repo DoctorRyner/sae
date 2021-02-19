@@ -12,30 +12,6 @@ getArgs = toList <$> primIO prim__getArgs
 
 %foreign
     (node "str => {
-        var syncPromise = require('synchronized-promise')
-        var spawn = require('child_process').spawn
-        var asyncFunction = () => {
-            return new Promise((resolve, _) => {
-                var args = require('string-argv').parseArgsStringToArgv(str)
-                var cmdUtil = args.shift();
-                var command = spawn(cmdUtil, args)
-                command.stdout.pipe(process.stdout);
-                command.stderr.pipe(process.stderr)
-                command.on('close', code => resolve(code))
-                command.on('error', () => resolve(-1))
-            })
-        }
-        var syncFunction = syncPromise(asyncFunction)
-        return syncFunction()
-    }")
-prim__systemShort : String -> PrimIO Double
-
-export
-systemLegacy : String -> IO Double
-systemLegacy = primIO . prim__systemShort
-
-%foreign
-    (node "str => {
         try {
             require('child_process').execSync(str, {stdio: 'inherit'})
             return 0
