@@ -12,6 +12,14 @@ A build tool for Idris 2 that allows you to manage dependencies and projects
 
 3. Well done, now you can type `sae help` to see usage info or you can read explanation below
 
+# Examples
+
+I made 2 example packages that target javascript:
+* https://github.com/DoctorRyner/idris-js-example
+* https://github.com/DoctorRyner/idris-react-example
+
+Also, in this repo there is folder examples/ with a project that uses these packages
+
 # Usage
 
 ## help
