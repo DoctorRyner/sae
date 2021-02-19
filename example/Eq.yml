@@ -4,12 +4,12 @@ target: node
 
 depends:
 - contrib
-- js-0.0.1
+- js-example-0.0.1
 
 sources:
-- name: js
-  url: https://github.com/DoctorRyner/idris-js
-  version: 2c9c14e7704748ab3cde9a0c9492439d2f99a4dc
-- name: react
-  url: https://github.com/DoctorRyner/idris-react
-  version: 6c04fa450a03280a1d298e324a02b7b96ca4c354
+- name: js-example
+  url: https://github.com/DoctorRyner/idris-js-example
+  version: 68484e7c36ae6a1fc4f3ee5a8c695602b823a5af
+- name: react-example
+  url: https://github.com/DoctorRyner/idris-react-example
+  version: fa0b1012c99e50a58600bd096d7c1705778fb266
