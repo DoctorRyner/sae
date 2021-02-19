@@ -22,6 +22,7 @@ availableCommands =
     , Build
     , Install
     , Release
+    , Repl
     , Run []
     , New ""
     ]
@@ -36,6 +37,7 @@ commandToString = \case
     Build         => "build                 Build project"
     Install       => "install               Register package in the system"
     Release       => "release               Compile project into a file"
+    Repl          => "repl                  Open REPL"
     Run _         => "run                   Run compiled file"
     New _         => "new                   Create a sae project"
 
@@ -198,6 +200,12 @@ run args cfg = do
     system runCmd
     pure ()
 
+repl : Config -> IO ()
+repl cfg = do
+    build cfg
+    system $ "idris2 --repl " ++ cfg.package ++ ".ipkg"
+    pure ()
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg
 evalCommand cfg FetchDeps     = fetchDeps cfg
@@ -206,6 +214,7 @@ evalCommand cfg ReinstallDeps = installDeps True cfg
 evalCommand cfg Build         = build cfg
 evalCommand cfg Install       = install cfg
 evalCommand cfg Release       = release cfg
+evalCommand cfg Repl          = repl cfg
 evalCommand cfg (Run args)    = run args cfg
 evalCommand _   _             = putStrLn "Impossible happened, there is an unhandled case in the runCommand function"
 

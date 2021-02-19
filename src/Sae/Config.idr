@@ -37,10 +37,17 @@ stringFields =
     , "homepage"
     , "sourceloc"
     , "bugtracker"
+    , "main"
     , "executable"
     , "sourcedir"
     , "builddir"
     , "outputdir"
+    , "prebuild"
+    , "postbuild"
+    , "preinstall"
+    , "postinstall"
+    , "preclean"
+    , "postclean"
     ]
 
 stringListFields : List String
@@ -143,7 +150,7 @@ parseConfig xs = do
         sourceloc   = optStringField "sourceloc" xs
         bugtracker  = optStringField "bugtracker" xs
         depends     = stringArrayField "depends" xs
-        mainmod     = optStringField "mainmod" xs
+        main        = optStringField "main" xs
         executable  = optStringField "executable" xs
         sourcedir   = fromMaybe "src" $ optStringField "sourcedir" xs
         builddir    = optStringField "builddir" xs
@@ -174,7 +181,7 @@ parseConfig xs = do
     pure $ MkConfig
         { package, version, langVersion, target, authors, maintainers, license, brief, readme
         , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
-        , modules, mainmod, sources, pkgsDir, prebuild, postbuild, preinstall, postinstall
+        , modules, main, sources, pkgsDir, prebuild, postbuild, preinstall, postinstall
         , preclean, postclean
         }
 

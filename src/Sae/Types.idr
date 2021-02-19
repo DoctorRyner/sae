@@ -16,6 +16,7 @@ data Command
     | Build
     | Install
     | Release
+    | Repl
     | Run (List String)
     | New String
 
@@ -56,7 +57,7 @@ record Config where
     bugtracker  : Maybe String
     depends     : List String
     modules     : List String -- Can't be specified manualy
-    mainmod     : Maybe String
+    main        : Maybe String
     executable  : Maybe String
     sourcedir   : String -- optional
     builddir    : Maybe String
