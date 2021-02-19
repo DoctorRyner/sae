@@ -10,7 +10,7 @@ A build tool for Idris 2 that allows you to manage dependencies and projects
 
 2. Unzip the archive and place the `sae` executable in your PATH, for example, like this: `sudo cp sae /usr/local/bin `
 
-3. Well done, now you can type `sae help` to see usage info or you can read explanation below
+3. Well done, now you can type `sae help` to see usage info or you can read the explanation below
 
 # Examples
 
