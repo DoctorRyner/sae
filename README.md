@@ -124,4 +124,4 @@ Requirements:
 * git
 * npm + yarn, for linux users, you can avoid issues if you install `npm` through `nvm`
 
-Then clone the project `git clone https://github.com/DoctorRyner/sae` and run `yarn install-mac` or `yarn install-linux`, it'll compile `sae` and install the executable into `/usr/local/bin/sae`, now you can run `yarn install-${your-os}` after every change and test your changes
+Clone the project `git clone https://github.com/DoctorRyner/sae` and run `yarn install-mac` or `yarn install-linux`, it'll compile `sae` and install the executable into `/usr/local/bin/sae`, now you can run `yarn install-${your-os}` after every change and test your changes
