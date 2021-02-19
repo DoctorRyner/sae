@@ -22,17 +22,24 @@ configToIpkg cfg = concat
     , "\n\n"
     , "sourcedir = " ++ show cfg.sourcedir ++ "\n"
     , concatMap optField
-        [ "authors" # cfg.authors
+        [ "authors"     # cfg.authors
         , "maintainers" # cfg.maintainers
-        , "license" # cfg.license
-        , "brief" # cfg.brief
-        , "readme" # cfg.readme
-        , "homepage" # cfg.homepage
-        , "sourceloc" # cfg.sourceloc
-        , "bugtracker" # cfg.bugtracker
-        , "executable" # cfg.executable
-        , "builddir" # cfg.builddir
-        , "outputdir" # cfg.outputdir
+        , "license"     # cfg.license
+        , "brief"       # cfg.brief
+        , "readme"      # cfg.readme
+        , "homepage"    # cfg.homepage
+        , "sourceloc"   # cfg.sourceloc
+        , "bugtracker"  # cfg.bugtracker
+        , "mainmod"     # cfg.mainmod
+        , "executable"  # cfg.executable
+        , "builddir"    # cfg.builddir
+        , "outputdir"   # cfg.outputdir
+        , "prebuild"    # cfg.prebuild
+        , "postbuild"   # cfg.postbuild
+        , "preinstall"  # cfg.preinstall
+        , "postinstall" # cfg.postinstall
+        , "preclean"    # cfg.preclean
+        , "postclean"   # cfg.postclean
         ]
     , "\n"
     , if length cfg.depends == 0 

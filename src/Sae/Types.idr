@@ -56,44 +56,22 @@ record Config where
     bugtracker  : Maybe String
     depends     : List String
     modules     : List String -- Can't be specified manualy
+    mainmod     : Maybe String
     executable  : Maybe String
     sourcedir   : String -- optional
     builddir    : Maybe String
     outputdir   : Maybe String
+    prebuild    : Maybe String
+    postbuild   : Maybe String
+    preinstall  : Maybe String
+    postinstall : Maybe String
+    preclean    : Maybe String
+    postclean   : Maybe String
     -- Original fields
     langVersion : String -- Can't be specified manualy
     pkgsDir     : String -- Can't be specified manualy
     target      : String -- optional
     sources     : List Source
-
-public export
-Show Config where
-    show config =
-        "MkConfig\n    { "
-            ++ join
-                "\n    , "
-                [ "package: " ++ show config.package
-                , "version: " ++ show config.version
-                , "langVersion: " ++ show config.langVersion
-                , "pkgsDir: " ++ show config.pkgsDir
-                , "target: " ++ show config.target
-                , "authors: " ++ show config.authors
-                , "maintainers: " ++ show config.maintainers
-                , "license: " ++ show config.license
-                , "brief: " ++ show config.brief
-                , "readme: " ++ show config.readme
-                , "homepage: " ++ show config.homepage
-                , "sourceloc: " ++ show config.sourceloc
-                , "bugtracker: " ++ show config.bugtracker
-                , "executable: " ++ show config.executable
-                , "sourcedir: " ++ show config.sourcedir
-                , "builddir: " ++ show config.builddir
-                , "outputdir: " ++ show config.outputdir
-                , "depends: " ++ show config.depends
-                , "modules: " ++ show config.modules
-                , "sources: " ++ show config.sources
-                ]
-            ++ "\n    }\n"
 
 public export
 data ConfigError
