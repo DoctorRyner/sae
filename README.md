@@ -5,8 +5,8 @@ A build tool for Idris 2 that allows you to manage dependencies and projects
 # Install
 
 1. Download `sae` for your operating system. At the moment, Windows isn't supported, for some reason, `sae.exe` throws an error if you try to use such commands as `sae build`, further research is required
-   https://github.com/DoctorRyner/sae/releases/download/v0.0.2/sae-linux.zip
-   https://github.com/DoctorRyner/sae/releases/download/v0.0.2/sae-mac.zip
+   https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-linux.zip
+   https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-mac.zip
 
 2. Unzip the archive and place the `sae` executable in your PATH, for example, like this: `sudo cp sae /usr/local/bin `
 
