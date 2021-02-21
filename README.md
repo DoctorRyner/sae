@@ -40,7 +40,7 @@ Create a basic project with next files:
 
 ### Eq.yml structure
 
-Eq.yml has all of the fields of ipkg config format except for `modules` and `name`, it also has a few new fields. We will overview only these changes and required fields. If you need information about all config fields, you can see them here https://github.com/DoctorRyner/sae/blob/d529ac2dfe8d1ae79d25798e819839d49a735bb6/src/Sae/Types.idr#L45
+Eq.yml has all of the fields of ipkg config format except for `modules`, it also has a few new fields. We will overview only these changes and required fields. If you need information about all config fields, you can see them here https://github.com/DoctorRyner/sae/blob/d529ac2dfe8d1ae79d25798e819839d49a735bb6/src/Sae/Types.idr#L45
 
 * package — the same as `name`
 * modules — no need to specify modules manually, they are all generated automatically
