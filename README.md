@@ -61,7 +61,7 @@ Where:
 
 Required fields:
 
-* package — the package name, note: this field is used as a name for the generated .ipkg file
+* package — the package name, note: this field is used as the name for the generated .ipkg file
 * version — the package version, should be in the format `0.0.1`
 
 To add a dependency from a source, you need to specify a `package name` and a `version` like this:
