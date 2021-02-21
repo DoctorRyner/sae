@@ -42,7 +42,6 @@ Create a basic project with next files:
 
 Eq.yml has all of the fields of ipkg config format except for `modules`, it also has a few new fields. We will overview only these changes and required fields. If you need information about all config fields, you can see them here (Search for the Config record) https://github.com/DoctorRyner/sae/blob/master/src/Sae/Types.idr#L44
 
-* package — the same as `name`
 * modules — no need to specify modules manually, they are all generated automatically
 * target — the same as `--codegen` or `--cg` for `idris2` executable, by default `chez` is used
 * ignoredModules — excludes listed modules from building
