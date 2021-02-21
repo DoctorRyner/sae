@@ -45,6 +45,7 @@ Eq.yml has all of the fields of ipkg config format except for `modules` and `nam
 * package — the same as `name`
 * modules — no need to specify modules manually, they are all generated automatically
 * target — the same as `--codegen` or `--cg` for `idris2` executable, by default `chez` is used
+* ignoredModules — excludes listed modules from building
 * sources — a list of external dependencies in the format:
 
 ```yaml

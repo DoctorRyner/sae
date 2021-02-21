@@ -2,6 +2,10 @@ package: example
 version: 0.0.1
 target: node
 
+ignoredModules:
+- Data.Struct2
+# - TestModule
+
 depends:
 - contrib
 - js-example-0.0.1

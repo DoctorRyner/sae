@@ -45,34 +45,35 @@ public export
 record Config where
     constructor MkConfig
     -- Direct ipkg fields
-    package     : String -- Called name in ipkg
-    version     : String
-    authors     : Maybe String
-    maintainers : Maybe String
-    license     : Maybe String
-    brief       : Maybe String
-    readme      : Maybe String
-    homepage    : Maybe String
-    sourceloc   : Maybe String
-    bugtracker  : Maybe String
-    depends     : List String
-    modules     : List String -- Can't be specified manually
-    main        : Maybe String
-    executable  : Maybe String
-    sourcedir   : String -- optional
-    builddir    : Maybe String
-    outputdir   : Maybe String
-    prebuild    : Maybe String
-    postbuild   : Maybe String
-    preinstall  : Maybe String
-    postinstall : Maybe String
-    preclean    : Maybe String
-    postclean   : Maybe String
+    package        : String -- Called name in ipkg
+    version        : String
+    authors        : Maybe String
+    maintainers    : Maybe String
+    license        : Maybe String
+    brief          : Maybe String
+    readme         : Maybe String
+    homepage       : Maybe String
+    sourceloc      : Maybe String
+    bugtracker     : Maybe String
+    depends        : List String
+    modules        : List String -- Can't be specified manually
+    main           : Maybe String
+    executable     : Maybe String
+    sourcedir      : String -- optional
+    builddir       : Maybe String
+    outputdir      : Maybe String
+    prebuild       : Maybe String
+    postbuild      : Maybe String
+    preinstall     : Maybe String
+    postinstall    : Maybe String
+    preclean       : Maybe String
+    postclean      : Maybe String
     -- Original fields
-    langVersion : String -- Can't be specified manually
-    pkgsDir     : String -- Can't be specified manually
-    target      : String -- optional
-    sources     : List Source
+    langVersion    : String -- Can't be specified manually
+    pkgsDir        : String -- Can't be specified manually
+    target         : String -- optional
+    ignoredModules : List String
+    sources        : List Source
 
 public export
 data ConfigError
@@ -80,4 +81,4 @@ data ConfigError
      | TypeMismatch String String
      | RequiredFieldMissing String
      | ConfigFileShouldBeObject
-     | Custom String
+     | ReadingError String

@@ -51,7 +51,7 @@ stringFields =
     ]
 
 stringListFields : List String
-stringListFields = ["depends", "modules"]
+stringListFields = ["depends", "modules", "ignoredModules"]
 
 sourceFields : List String
 sourceFields = ["name", "url", "version", "commit"]
@@ -139,49 +139,57 @@ parseConfig : List (String, JSON) -> ConfigIO Config
 parseConfig xs = do
     traverse_ (\field => checkField field) xs
 
-    let package     = !(reqStringField "package" xs)
-        version     = !(reqStringField "version" xs)
-        authors     = optStringField "authors" xs
-        maintainers = optStringField "maintainers" xs
-        license     = optStringField "license" xs
-        brief       = optStringField "brief" xs
-        readme      = optStringField "readme" xs
-        homepage    = optStringField "homepage" xs
-        sourceloc   = optStringField "sourceloc" xs
-        bugtracker  = optStringField "bugtracker" xs
-        depends     = stringArrayField "depends" xs
-        main        = optStringField "main" xs
-        executable  = optStringField "executable" xs
-        sourcedir   = fromMaybe "src" $ optStringField "sourcedir" xs
-        builddir    = optStringField "builddir" xs
-        outputdir   = optStringField "outputdir" xs
-        prebuild    = optStringField "prebuild" xs
-        postbuild   = optStringField "postbuild" xs
-        preinstall  = optStringField "preinstall" xs
-        postinstall = optStringField "postinstall" xs
-        preclean    = optStringField "preclean" xs
-        postclean   = optStringField "postclean" xs
-        target      = fromMaybe "chez" $ optStringField "target" xs
-        langVersion = pack $ take 5 $ drop 17 $ unpack !(primIO $ systemStr "idris2 --version")
-        pkgsDir     = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
+    let package        = !(reqStringField "package" xs)
+        version        = !(reqStringField "version" xs)
+        authors        = optStringField "authors" xs
+        maintainers    = optStringField "maintainers" xs
+        license        = optStringField "license" xs
+        brief          = optStringField "brief" xs
+        readme         = optStringField "readme" xs
+        homepage       = optStringField "homepage" xs
+        sourceloc      = optStringField "sourceloc" xs
+        bugtracker     = optStringField "bugtracker" xs
+        depends        = stringArrayField "depends" xs
+        main           = optStringField "main" xs
+        executable     = optStringField "executable" xs
+        sourcedir      = fromMaybe "src" $ optStringField "sourcedir" xs
+        builddir       = optStringField "builddir" xs
+        outputdir      = optStringField "outputdir" xs
+        prebuild       = optStringField "prebuild" xs
+        postbuild      = optStringField "postbuild" xs
+        preinstall     = optStringField "preinstall" xs
+        postinstall    = optStringField "postinstall" xs
+        preclean       = optStringField "preclean" xs
+        postclean      = optStringField "postclean" xs
+        target         = fromMaybe "chez" $ optStringField "target" xs
+        langVersion    = pack $ take 5 $ drop 17 $ unpack !(primIO $ systemStr "idris2 --version")
+        pkgsDir        = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
+        ignoredModules = stringArrayField "ignoredModules" xs
+        sources        = !(sourcesField xs)
 
         refineModuleString : String -> String
         refineModuleString xs =
-            pack $ map
-                (\c => if c == '/' then '.' else c)
-                (unpack $ dropLast 4 xs)
+            pack $ map (\c => if c == '/' then '.' else c)
+                       (unpack $ dropLast 4 xs)
+
+        isNotIgnored : String -> Bool
+        isNotIgnored moduleName =
+            case find (== moduleName) ignoredModules of
+                Just _ => False
+                Nothing => True
 
     modules <- primIO $ do
         changeDir sourcedir
         fileNames <- getFileNames "**/*.idr"
         changeDir ".."
-        pure $ map refineModuleString fileNames
-    sources <- sourcesField xs
+        pure
+            $ filter isNotIgnored
+            $ map refineModuleString fileNames
 
     pure $ MkConfig
         { package, version, langVersion, target, authors, maintainers, license, brief, readme
         , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
-        , modules, main, sources, pkgsDir, prebuild, postbuild, preinstall, postinstall
+        , modules, main, sources, ignoredModules, pkgsDir, prebuild, postbuild, preinstall, postinstall
         , preclean, postclean
         }
 
@@ -189,7 +197,7 @@ mkConfig : ConfigIO Config
 mkConfig = do
     eqFileContent <-
         case !(primIO $ readFile "Eq.yml") of
-            Left err => throw $ Custom $ show err
+            Left err => throw $ ReadingError $ show err
             Right x => pure $ yamlToJson x
     objectContent <-
         case parse eqFileContent of
@@ -210,4 +218,4 @@ configErrorToString = \case
                                                                                ++ show expectedType
     RequiredFieldMissing field      => "Missing required " ++ show field ++ " field"
     ConfigFileShouldBeObject        => "Config file should be an object"
-    Custom s                        => s
+    ReadingError err                => "Couldn't read Eq.yml: " ++ err
