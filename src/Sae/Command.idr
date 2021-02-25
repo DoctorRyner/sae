@@ -12,7 +12,7 @@ import Sae.Info
 import Sae.Ipkg
 import Sae.Types
 import System.Directory
-import System.File
+import Js.System.File
 
 availableCommands : List Command
 availableCommands =

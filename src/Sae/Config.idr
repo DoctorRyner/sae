@@ -13,7 +13,7 @@ import Js.Yaml
 import Sae.Types
 import Sae.Info
 import System.Directory
-import System.File
+import Js.System.File
 import System
 import Language.JSON
 
@@ -197,7 +197,7 @@ mkConfig : ConfigIO Config
 mkConfig = do
     eqFileContent <-
         case !(primIO $ readFile "Eq.yml") of
-            Left err => throw $ ReadingError $ show err
+            Left err => throw $ ReadingError err
             Right x => pure $ yamlToJson x
     objectContent <-
         case parse eqFileContent of

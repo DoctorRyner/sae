@@ -13,6 +13,8 @@ modules = Main
         , Js.FFI
         , Js.Array
         , Js.Nullable
+        , Js.System
+        , Js.System.File
         , Sae.Types
         , Sae.Command
         , Sae.ArgsParser

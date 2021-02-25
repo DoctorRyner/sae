@@ -4,7 +4,7 @@ target: node
 
 ignoredModules:
 - Data.Struct2
-# - TestModule
+- TestModule
 
 depends:
 - contrib
