@@ -11,7 +11,7 @@ Idris 2 build tool, manage packages and projects with ease!
 
 # Install
 
-Execute in terminal
+Execute this
 ```bash
 sh -c "$(curl https://raw.githubusercontent.com/DoctorRyner/sae/master/scripts/install.sh)"`
 ```
