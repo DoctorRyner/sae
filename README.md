@@ -18,7 +18,7 @@ sh -c "$(curl https://raw.githubusercontent.com/DoctorRyner/sae/master/scripts/i
 
 Or go to [releases](https://github.com/DoctorRyner/sae/releases) and place an executable in your path manually
 
-Then you can type `sae help` to see short usage info, for more information on sae checkout [Eq.yml structure](docs/Eq.yml-Structure.md) and [Usage](docs/Usage.md)
+Then you can type `sae help` to see a short usage info, for more information on sae checkout [Eq.yml structure](docs/Eq.yml-Structure.md) and [Usage](docs/Usage.md)
 
 # Examples
 
