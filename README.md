@@ -1,6 +1,6 @@
 # SAE (Solver of All Equations)
 
-A build tool for Idris 2 that allows you to manage dependencies and projects
+Idris 2 build tool, manage packages and projects with ease!
 
 ##### Table of Contents
 - [Install](#install)
@@ -11,13 +11,9 @@ A build tool for Idris 2 that allows you to manage dependencies and projects
 
 # Install
 
-1. Download `sae` 
-   https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-linux.zip
-   https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-mac.zip
+Type `sh -c "$(curl https://raw.githubusercontent.com/DoctorRyner/sae/master/scripts/install.sh)"`
 
-2. Unzip the archive and place the `sae` executable in your PATH, for example, like this: `sudo cp sae /usr/local/bin `
-
-3. Well done, now you can type `sae help` to see usage info or you can read the explanation below
+Or go to [releases](https://github.com/DoctorRyner/sae/releases) and place an executable in your path manually
 
 # Examples
 
@@ -25,14 +21,17 @@ I made 2 example packages that target javascript:
 * https://github.com/DoctorRyner/idris-js-example
 * https://github.com/DoctorRyner/idris-react-example
 
-Also, in this repo, there is folder `examples/` with a project that uses these packages
+You can see how to use them in [examples](https://github.com/DoctorRyner/sae/tree/master/example)
 
 # Development
 
 Requirements:
-
+* sae
 * idris2
 * git
 * npm + yarn, for linux users, you can avoid issues if you install `npm` through `nvm`
 
-Clone the project `git clone https://github.com/DoctorRyner/sae` and run `yarn install-mac` or `yarn install-linux`, it'll compile `sae` and install the executable into `/usr/local/bin/sae`, now you can run `yarn install-${your-os}` after every change and test your changes
+1. Clone the project `git clone https://github.com/DoctorRyner/sae`
+2. Type `sae build` to build the project
+3. Make changes
+4. Run `yarn install-mac` or `yarn install-linux` to test your newly acquired executable at /usr/local/bin/sae
