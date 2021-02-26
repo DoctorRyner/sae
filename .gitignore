@@ -3,6 +3,7 @@ build/
 deps/
 node_modules/
 example/example.ipkg
+sae.ipkg
 
 # Executables
 sae-macos
