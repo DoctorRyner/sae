@@ -34,4 +34,4 @@ Requirements:
 1. Clone the project `git clone https://github.com/DoctorRyner/sae`
 2. Type `sae build` to build the project
 3. Make changes
-4. Run `yarn install-mac` or `yarn install-linux` to test your newly acquired executable at /usr/local/bin/sae
+4. Run `yarn install-mac` or `yarn install-linux` to test your newly acquired executable at `/usr/local/bin/sae`
