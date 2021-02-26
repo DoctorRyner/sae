@@ -10,6 +10,7 @@ import Js.Glob
 import Js.Nullable
 import Js.System
 import Js.Yaml
+import Js.Toml
 import Sae.Types
 import Sae.Info
 import System.Directory
@@ -197,8 +198,10 @@ mkConfig : ConfigIO Config
 mkConfig = do
     eqFileContent <-
         case !(primIO $ readFileFixed "Eq.yml") of
-            Left err => throw $ ReadingError err
-            Right x => pure $ yamlToJson x
+            Left _ => case !(primIO $ readFileFixed "Eq.toml") of
+                Left err => throw $ ReadingError err
+                Right x  => pure $ tomlToJson x
+            Right x  => pure $ yamlToJson x
     objectContent <-
         case parse eqFileContent of
             Just (JObject xs) => pure xs
@@ -218,4 +221,4 @@ configErrorToString = \case
                                                                                ++ show expectedType
     RequiredFieldMissing field      => "Missing required " ++ show field ++ " field"
     ConfigFileShouldBeObject        => "Config file should be an object"
-    ReadingError err                => "Couldn't read Eq.yml: " ++ err
+    ReadingError err                => "Couldn't read Eq.{yml,toml}: " ++ err
