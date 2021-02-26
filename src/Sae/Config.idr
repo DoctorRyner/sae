@@ -196,7 +196,7 @@ parseConfig xs = do
 mkConfig : ConfigIO Config
 mkConfig = do
     eqFileContent <-
-        case !(primIO $ readFile "Eq.yml") of
+        case !(primIO $ readFileFixed "Eq.yml") of
             Left err => throw $ ReadingError err
             Right x => pure $ yamlToJson x
     objectContent <-

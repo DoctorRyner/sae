@@ -58,7 +58,7 @@ generateIpkg cfg =
         ipkgFiles = !(getFileNames "*.ipkg")
         ipkgPath = dir ++ "/" ++ cfg.package ++ ".ipkg"
         ipkg = configToIpkg cfg
-    in case !(writeFile ipkgPath ipkg) of
+    in case !(writeFileFixed ipkgPath ipkg) of
         Left err => print err
         Right _ =>
             when (not $ cfg.package ++ ".ipkg" `elem` ipkgFiles) $
@@ -161,9 +161,9 @@ new projectName = do
     createDir projectName
     changeDir projectName
     createDir "src"
-    writeFile "Eq.yml" $ mkEqFile projectName
-    writeFile "src/Main.idr" basicMainFile
-    writeFile ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
+    writeFileFixed "Eq.yml" $ mkEqFile projectName
+    writeFileFixed "src/Main.idr" basicMainFile
+    writeFileFixed ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
     pure ()
 
 release : Config -> IO ()
