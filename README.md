@@ -11,7 +11,10 @@ Idris 2 build tool, manage packages and projects with ease!
 
 # Install
 
-Execute in terminal `sh -c "$(curl https://raw.githubusercontent.com/DoctorRyner/sae/master/scripts/install.sh)"`
+Execute in terminal
+```bash
+sh -c "$(curl https://raw.githubusercontent.com/DoctorRyner/sae/master/scripts/install.sh)"`
+```
 
 Or go to [releases](https://github.com/DoctorRyner/sae/releases) and place an executable in your path manually
 
