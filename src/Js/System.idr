@@ -36,7 +36,7 @@ export
 systemStr : String -> IO String
 systemStr = primIO . prim__systemStr
 
-%foreign (node "() => process.env.HOME")
+%foreign (node "() => require('os').homedir()")
 prim__getHomeDir : PrimIO String
 
 export

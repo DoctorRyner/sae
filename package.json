@@ -12,11 +12,9 @@
     ]
   },
   "scripts": {
-    "build": "idris2 --build sae.ipkg",
-    "release": "yarn build && idris2 src/Main.idr --codegen node -p contrib -o index.js",
-    "mk-exe": "yarn release && pkg . --target nodev14-macos-x64,nodev14-linux-x64",
-    "install-mac": "yarn mk-exe && mv sae-macos /usr/local/bin/sae",
-    "install-linux": "yarn mk-exe && sudo mv sae-linux /usr/local/bin/sae"
+    "mk-exe": "sae release && pkg . --target nodev14-macos-x64,nodev14-linux-x64,nodev14-win-x64 --out-path build/",
+    "install-mac": "sae release && pkg . --target nodev14-macos-x64 --out-path /usr/local/bin/",
+    "install-linux": "sae release && pkg . --target nodev14-linux-x64 --out-path build/ && sudo cp build/sae /usr/local/bin/"
   },
   "dependencies": {
     "glob": "^7.1.6",

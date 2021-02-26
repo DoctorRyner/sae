@@ -195,7 +195,7 @@ run args cfg = do
         runCmd =
             if cfg.target == "node"
             then "node " ++ outputFilePath ++ " " ++ join " " args
-            else "sh " ++ outputFilePath ++ " " ++ join " " args
+            else outputFilePath ++ " " ++ join " " args
 
     system runCmd
     pure ()
