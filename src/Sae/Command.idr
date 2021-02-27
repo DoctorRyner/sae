@@ -1,5 +1,6 @@
 module Sae.Command
 
+import Data.Either
 import Data.String
 import Data.String.Extra
 import Data.Maybe
@@ -11,6 +12,7 @@ import Sae.Config
 import Sae.Info
 import Sae.Ipkg
 import Sae.Types
+import Sae.Utils
 import System.Directory
 import Js.System.File
 
@@ -52,6 +54,8 @@ usageInfo =
           ]
         ++ map (("  " ++) . commandToString) availableCommands
 
+-- generate-ipkg
+
 generateIpkg : Config -> IO ()
 generateIpkg cfg =
     let dir = fromMaybe "./" !currentDir
@@ -59,26 +63,33 @@ generateIpkg cfg =
         ipkgPath = dir ++ "/" ++ cfg.package ++ ".ipkg"
         ipkg = configToIpkg cfg
     in case !(writeFileFixed ipkgPath ipkg) of
-        Left err => print err
+        Left err => failMsg $ show err
         Right _ =>
             when (not $ cfg.package ++ ".ipkg" `elem` ipkgFiles) $
                 putStrLn $ "Generated: " ++ ipkgPath
 
+-- fetch
+
 fetchSource : Config -> Source -> IO ()
-fetchSource cfg src =
+fetchSource cfg src = do
     let folderName = src.name ++ "-" ++ src.version
         cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
-    in when (not !(doesFileExist folderName)) $ do
-        when (!(system cloneCmd) == 0) $ do
+
+    when (not !(doesFileExist folderName)) $
+        if !(system cloneCmd) == 0
+        then do
             changeDir folderName
-            system changeVersionCmd
-            -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
-            --     yarnVersionCmdResult <- system "yarn --version"
-            --     system $ if True then "yarn" else "npm i"
-            --     pure ()
-            changeDir ".."
-            pure ()
+            if !(system changeVersionCmd) == 0
+                then do
+                    -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
+                    --     yarnVersionCmdResult <- system "yarn --version"
+                    --     system $ if yarnVersionCmdResult == 0 then "yarn" else "npm i"
+                    --     pure ()
+                    changeDir ".."
+                    pure ()
+                else failMsg $ "Couldn't switch to version: " ++ changeVersionCmd
+        else failMsg $ "Cloning failed: " ++ cloneCmd
 
 fetchDeps : Config -> IO ()
 fetchDeps cfg = do
@@ -91,6 +102,8 @@ fetchDeps cfg = do
     traverse_ (fetchSource cfg) cfg.sources
 
 mutual
+    -- install-deps / reinstall-deps
+
     installSource : Bool -> Source -> IO ()
     installSource shouldRebuild src = do
         let folderName = src.name ++ "-" ++ src.version
@@ -104,7 +117,7 @@ mutual
                 installedPkgDirDoesntExist <- not <$> doesFileExist installedPkgDir
                 when (shouldRebuild || installedPkgDirDoesntExist) $
                     install cfg
-            Left err => putStrLn $ configErrorToString err
+            Left err => failMsg $ configErrorToString err
         changeDir ".."
         pure ()
 
@@ -115,6 +128,8 @@ mutual
         changeDir depsDir
         traverse_ (installSource shouldRebuild) cfg.sources
 
+    -- build
+
     build : Config -> IO ()
     build cfg = do
         initialDir <- fromMaybe "" <$> currentDir
@@ -123,6 +138,8 @@ mutual
         changeDir initialDir
         system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
         pure ()
+
+    -- install
 
     install : Config -> IO ()
     install cfg = do
@@ -133,6 +150,8 @@ mutual
         changeDir initialDir
         system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
         pure ()
+
+-- new
 
 mkEqFile : String -> String
 mkEqFile projectName = join "\n"
@@ -166,6 +185,8 @@ new projectName = do
     writeFileFixed ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
     pure ()
 
+-- release
+
 release : Config -> IO ()
 release cfg = do
     build cfg
@@ -182,10 +203,12 @@ release cfg = do
         projectPath = fromMaybe "" !currentDir
         outputMsg =
             if releaseCmdResultCode == 0
-            then "Compiled: " ++ projectPath ++ (fromMaybe "/build" cfg.builddir) ++ "/exec/" ++ outputFileName
-            else "ERROR(" ++ show releaseCmdResultCode ++ "): Couldn't built " ++ cfg.package
+            then Right $ "Compiled: " ++ projectPath ++ (fromMaybe "/build" cfg.builddir) ++ "/exec/" ++ outputFileName
+            else Left $ "ERROR(" ++ show releaseCmdResultCode ++ "): Couldn't built " ++ cfg.package
 
-    putStrLn outputMsg
+    either failMsg putStrLn outputMsg
+
+-- run
 
 run : List String -> Config -> IO ()
 run args cfg = do
@@ -200,10 +223,22 @@ run args cfg = do
     system runCmd
     pure ()
 
+-- repl
+
 repl : Config -> IO ()
 repl cfg = do
     build cfg
-    system $ "idris2 --repl " ++ cfg.package ++ ".ipkg"
+
+    let idrisReplCmd = "idris2 --repl " ++ cfg.package ++ ".ipkg"
+        rlwrapVersionCmdResult = !(systemStr "rlwrap --version")
+        replCmd =
+            if isRight rlwrapVersionCmdResult
+            then "rlwrap " ++ idrisReplCmd
+            else idrisReplCmd
+
+    when (isLeft rlwrapVersionCmdResult) $
+        putStrLn "WARNING! Install 'rlwrap' to get history and improve your repl experience"
+    system replCmd
     pure ()
 
 evalCommand : Config -> Command -> IO ()
@@ -216,10 +251,10 @@ evalCommand cfg Install       = install cfg
 evalCommand cfg Release       = release cfg
 evalCommand cfg Repl          = repl cfg
 evalCommand cfg (Run args)    = run args cfg
-evalCommand _   _             = putStrLn "Impossible happened, there is an unhandled case in the runCommand function"
+evalCommand _   _             = failMsg "Impossible happened, there is an unhandled case in the runCommand function"
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
-evalConfig _ (Left configError) = putStrLn $ configErrorToString configError
+evalConfig _ (Left configError) = failMsg $ configErrorToString configError
 evalConfig cmd (Right cfg) = evalCommand cfg cmd
 
 export

@@ -163,7 +163,16 @@ parseConfig xs = do
         preclean       = optStringField "preclean" xs
         postclean      = optStringField "postclean" xs
         target         = fromMaybe "chez" $ optStringField "target" xs
-        langVersion    = pack $ take 5 $ drop 17 $ unpack !(primIO $ systemStr "idris2 --version")
+        langVersion    =
+            pack $
+            take 5 $
+            drop 17 $
+            unpack
+                !(primIO $
+                  either
+                    (const "Idris 2, version 0.3.0")
+                    id
+                    <$> systemStr "idris2 --version")
         pkgsDir        = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
         ignoredModules = stringArrayField "ignoredModules" xs
         sources        = !(sourcesField xs)

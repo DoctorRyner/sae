@@ -8,7 +8,8 @@
   "pkg": {
     "assets": [
       "./node_modules/glob",
-      "./node_modules/js-yaml"
+      "./node_modules/js-yaml",
+      "./node_modules/toml"
     ]
   },
   "scripts": {

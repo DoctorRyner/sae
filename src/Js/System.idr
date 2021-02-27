@@ -1,5 +1,6 @@
 module Js.System
 
+import Data.List
 import Js.FFI
 import Js.Array
 
@@ -28,13 +29,17 @@ system = primIO . prim__system
         try {
             const result = require('child_process').execSync(str)
             return result.toString()
-        } catch (err) {return 'Idris 2, version 0.3.0'}
+        } catch (err) {return '@!ERR'.concat(err)}
     }")
 prim__systemStr : String -> PrimIO String
 
 export
-systemStr : String -> IO String
-systemStr = primIO . prim__systemStr
+systemStr : String -> IO (Either String String)
+systemStr cmd =
+    let output = !(primIO $ prim__systemStr cmd)
+    in pure $ if pack (take 5 $ unpack output) == "@!ERR"
+              then Left $ pack $ drop 5 $ unpack output
+              else Right output
 
 %foreign (node "() => require('os').homedir()")
 prim__getHomeDir : PrimIO String
