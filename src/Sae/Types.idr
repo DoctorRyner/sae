@@ -71,6 +71,7 @@ record Config where
     -- Original fields
     langVersion    : String -- Can't be specified manually
     pkgsDir        : String -- Can't be specified manually
+    projectDir     : String -- Can't be specified manually
     target         : String -- optional
     ignoredModules : List String
     sources        : List Source

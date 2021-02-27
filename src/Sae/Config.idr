@@ -174,6 +174,9 @@ parseConfig xs = do
                     id
                     <$> systemStr "idris2 --version")
         pkgsDir        = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
+        projectDir     = case !(primIO currentDir) of
+            Just dir => dir
+            Nothing => ""
         ignoredModules = stringArrayField "ignoredModules" xs
         sources        = !(sourcesField xs)
 
@@ -199,8 +202,8 @@ parseConfig xs = do
     pure $ MkConfig
         { package, version, langVersion, target, authors, maintainers, license, brief, readme
         , homepage, sourceloc, bugtracker, executable, sourcedir, builddir, outputdir, depends
-        , modules, main, sources, ignoredModules, pkgsDir, prebuild, postbuild, preinstall, postinstall
-        , preclean, postclean
+        , modules, main, sources, ignoredModules, pkgsDir, prebuild, postbuild, preinstall
+        , postinstall, preclean, postclean, projectDir
         }
 
 mkConfig : ConfigIO Config

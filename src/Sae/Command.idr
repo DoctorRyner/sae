@@ -70,26 +70,30 @@ generateIpkg cfg =
 
 -- fetch
 
-fetchSource : Config -> Source -> IO ()
-fetchSource cfg src = do
+fetchSource : String -> Config -> Source -> IO ()
+fetchSource depsDir cfg src = do
     let folderName = src.name ++ "-" ++ src.version
-        cloneCmd = "git clone " ++ src.url ++ " " ++ folderName
+        cloneDestination = depsDir ++ folderName
+        cloneCmd = "git clone " ++ src.url ++ " " ++ cloneDestination
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
 
-    when (not !(doesFileExist folderName)) $
+    changeDir cfg.projectDir
+
+    when (not !(doesFileExist cloneDestination)) $ do
+        putStrLn "Should be wasted clonning"
         if !(system cloneCmd) == 0
-        then do
-            changeDir folderName
-            if !(system changeVersionCmd) == 0
-                then do
-                    -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
-                    --     yarnVersionCmdResult <- system "yarn --version"
-                    --     system $ if yarnVersionCmdResult == 0 then "yarn" else "npm i"
-                    --     pure ()
-                    changeDir ".."
-                    pure ()
-                else failMsg $ "Couldn't switch to version: " ++ changeVersionCmd
-        else failMsg $ "Cloning failed: " ++ cloneCmd
+            then do
+                changeDir cloneDestination
+                if !(system changeVersionCmd) == 0
+                    then do
+                        -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
+                        --     yarnVersionCmdResult <- system "yarn --version"
+                        --     system $ if yarnVersionCmdResult == 0 then "yarn" else "npm i"
+                        --     pure ()
+                        changeDir ".."
+                        pure ()
+                    else failMsg $ "Couldn't switch to version: " ++ changeVersionCmd
+            else failMsg $ "Cloning failed: " ++ cloneCmd
 
 fetchDeps : Config -> IO ()
 fetchDeps cfg = do
@@ -98,8 +102,7 @@ fetchDeps cfg = do
         depsDir     = depsRootDir ++ "idris-" ++ cfg.langVersion ++ "/"
 
     traverse_ createDir [saeDir, depsRootDir, depsDir]
-    changeDir depsDir
-    traverse_ (fetchSource cfg) cfg.sources
+    traverse_ (fetchSource depsDir cfg) cfg.sources
 
 mutual
     -- install-deps / reinstall-deps
@@ -227,7 +230,10 @@ run args cfg = do
 
 repl : Config -> IO ()
 repl cfg = do
-    build cfg
+    initialDir <- fromMaybe "" <$> currentDir
+    generateIpkg cfg
+    installDeps False cfg
+    changeDir initialDir
 
     let idrisReplCmd = "idris2 --repl " ++ cfg.package ++ ".ipkg"
         rlwrapVersionCmdResult = !(systemStr "rlwrap --version")
