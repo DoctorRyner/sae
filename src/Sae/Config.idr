@@ -192,9 +192,9 @@ parseConfig xs = do
                 Nothing => True
 
     modules <- primIO $ do
-        changeDir sourcedir
+        _ <- changeDir sourcedir
         fileNames <- getFileNames "**/*.idr"
-        changeDir ".."
+        _ <- changeDir ".."
         pure
             $ filter isNotIgnored
             $ map refineModuleString fileNames

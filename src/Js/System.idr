@@ -12,12 +12,14 @@ getArgs : IO (List String)
 getArgs = toList <$> primIO prim__getArgs
 
 %foreign
-    (node "str => {
+    (node """
+    str => {
         try {
             require('child_process').execSync(str, {stdio: 'inherit'})
             return 0
         } catch (err) {return err.status}
-    }")
+    }
+    """)
 prim__system : String -> PrimIO Double
 
 export
@@ -25,12 +27,14 @@ system : String -> IO Double
 system = primIO . prim__system
 
 %foreign
-    (node "str => {
+    (node """
+    str => {
         try {
             const result = require('child_process').execSync(str)
             return result.toString()
         } catch (err) {return '@!ERR'.concat(err)}
-    }")
+    }
+    """)
 prim__systemStr : String -> PrimIO String
 
 export

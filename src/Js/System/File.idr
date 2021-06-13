@@ -11,14 +11,16 @@ isWindows = pure $ if !(primIO prim__isWindows) == 1
                    then True
                    else False
 
-%foreign "node:lambda:(path, data) => {
+%foreign """
+node:lambda:(path, data) => {
     try {
         require('fs').writeFileSync(path, data)
         return ''
     } catch(err) {
         return err
     }
-}"
+}
+"""
 prim__writeFile : String -> String -> PrimIO String
 
 writeFileWindowsCompatible : String -> String -> IO (Either String ())
@@ -38,13 +40,15 @@ writeFileFixed path content =
         Right x  => Right x
 
 export
-%foreign "node:lambda:path => {
+%foreign """
+node:lambda:path => {
     try {
         return require('fs').readFileSync(path, 'utf-8')
     } catch(err) {
         return '@!ERR'.concat(err)
     }
-}"
+}
+"""
 prim__readFile : String -> PrimIO String
 
 readFileWindowsCompatible : String -> IO (Either String String)

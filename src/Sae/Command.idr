@@ -77,20 +77,20 @@ fetchSource depsDir cfg src = do
         cloneCmd = "git clone " ++ src.url ++ " " ++ cloneDestination
         changeVersionCmd = "git -c advice.detachedHead=false checkout " ++ src.version
 
-    changeDir cfg.projectDir
+    _ <- changeDir cfg.projectDir
 
     when (not !(doesFileExist cloneDestination)) $ do
         putStrLn "Should be wasted clonning"
         if !(system cloneCmd) == 0
             then do
-                changeDir cloneDestination
+                _ <- changeDir cloneDestination
                 if !(system changeVersionCmd) == 0
                     then do
                         -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
                         --     yarnVersionCmdResult <- system "yarn --version"
                         --     system $ if yarnVersionCmdResult == 0 then "yarn" else "npm i"
                         --     pure ()
-                        changeDir ".."
+                        _ <- changeDir ".."
                         pure ()
                     else failMsg $ "Couldn't switch to version: " ++ changeVersionCmd
             else failMsg $ "Cloning failed: " ++ cloneCmd
@@ -110,25 +110,25 @@ mutual
     installSource : Bool -> Source -> IO ()
     installSource shouldRebuild src = do
         let folderName = src.name ++ "-" ++ src.version
-        changeDir folderName
+        _ <- changeDir folderName
         case !readConfig of
             Right cfg => do
                 let pkgName         = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
                     installedPkgDir = cfg.pkgsDir ++ "/" ++ pkgName
                 installDeps shouldRebuild cfg
-                changeDir folderName
+                _ <- changeDir folderName
                 installedPkgDirDoesntExist <- not <$> doesFileExist installedPkgDir
                 when (shouldRebuild || installedPkgDirDoesntExist) $
                     install cfg
             Left err => failMsg $ configErrorToString err
-        changeDir ".."
+        _ <- changeDir ".."
         pure ()
 
     installDeps : Bool -> Config -> IO ()
     installDeps shouldRebuild cfg = do
         let depsDir = !getHomeDir ++ "/.sae/deps/idris-" ++ cfg.langVersion ++ "/"
         fetchDeps cfg
-        changeDir depsDir
+        _ <- changeDir depsDir
         traverse_ (installSource shouldRebuild) cfg.sources
 
     -- build
@@ -138,8 +138,8 @@ mutual
         initialDir <- fromMaybe "" <$> currentDir
         generateIpkg cfg
         installDeps False cfg
-        changeDir initialDir
-        system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
+        _ <- changeDir initialDir
+        _ <- system $ "idris2 --build " ++ cfg.package ++ ".ipkg"
         pure ()
 
     -- install
@@ -150,8 +150,8 @@ mutual
         putStrLn $ "package: " ++ cfg.package ++ "-" ++ cfg.version
         generateIpkg cfg
         installDeps False cfg
-        changeDir initialDir
-        system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
+        _ <- changeDir initialDir
+        _ <- system $ "idris2 --install " ++ cfg.package ++ ".ipkg"
         pure ()
 
 -- new
@@ -180,12 +180,12 @@ basicMainFile = unlines
 
 new : String -> IO ()
 new projectName = do
-    createDir projectName
-    changeDir projectName
-    createDir "src"
-    writeFileFixed "Eq.yml" $ mkEqFile projectName
-    writeFileFixed "src/Main.idr" basicMainFile
-    writeFileFixed ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
+    _ <- createDir projectName
+    _ <- changeDir projectName
+    _ <- createDir "src"
+    _ <- writeFileFixed "Eq.yml" $ mkEqFile projectName
+    _ <- writeFileFixed "src/Main.idr" basicMainFile
+    _ <- writeFileFixed ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
     pure ()
 
 -- release
@@ -223,7 +223,7 @@ run args cfg = do
             then "node " ++ outputFilePath ++ " " ++ join " " args
             else outputFilePath ++ " " ++ join " " args
 
-    system runCmd
+    _ <- system runCmd
     pure ()
 
 -- repl
@@ -233,7 +233,7 @@ repl cfg = do
     initialDir <- fromMaybe "" <$> currentDir
     generateIpkg cfg
     installDeps False cfg
-    changeDir initialDir
+    _ <- changeDir initialDir
 
     let idrisReplCmd = "idris2 --repl " ++ cfg.package ++ ".ipkg"
         rlwrapVersionCmdResult = !(systemStr "rlwrap --version")
@@ -244,7 +244,7 @@ repl cfg = do
 
     when (isLeft rlwrapVersionCmdResult) $
         putStrLn "WARNING! Install 'rlwrap' to get history and improve your repl experience"
-    system replCmd
+    _ <- system replCmd
     pure ()
 
 evalCommand : Config -> Command -> IO ()

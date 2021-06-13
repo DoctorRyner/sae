@@ -13,16 +13,17 @@
     ]
   },
   "scripts": {
-    "mk-exe": "sae release && pkg . --target nodev14-macos-x64,nodev14-linux-x64,nodev14-win-x64 --out-path build/",
-    "install-mac": "sae release && pkg . --target nodev14-macos-x64 --out-path /usr/local/bin/",
+    "mk-exe": "sae release && pkg . --target nodev16-macos-x64,nodev14-linux-x64,nodev14-win-x64 --out-path build/",
+    "install-mac": "sae release && pkg . --target nodev16-macos-x64 --out-path /usr/local/bin/",
+    "install-mac-m1": "sae release && pkg . --target nodev16-macos-arm64 --out-path /usr/local/bin/",
     "install-linux": "sae release && pkg . --target nodev14-linux-x64 --out-path build/ && sudo cp build/sae /usr/local/bin/"
   },
   "dependencies": {
-    "glob": "^7.1.6",
-    "js-yaml": "^4.0.0",
+    "glob": "^7.1.7",
+    "js-yaml": "^4.1.0",
     "toml": "^3.0.0"
   },
   "devDependencies": {
-    "pkg": "^4.4.9"
+    "pkg": "^5.2.1"
   }
 }
