@@ -8,8 +8,7 @@
   "pkg": {
     "assets": [
       "./node_modules/glob",
-      "./node_modules/js-yaml",
-      "./node_modules/toml"
+      "./node_modules/js-yaml"
     ]
   },
   "scripts": {
@@ -20,8 +19,7 @@
   },
   "dependencies": {
     "glob": "^7.1.7",
-    "js-yaml": "^4.1.0",
-    "toml": "^3.0.0"
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "pkg": "^5.2.1"

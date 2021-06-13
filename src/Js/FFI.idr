@@ -25,7 +25,13 @@ export
 %foreign (js "(_a, _b, x) => x")
 unsafeCoerce : a -> b
 
-%foreign (js "time => {var waitTill = new Date(new Date().getTime() + time); while(waitTill > new Date()){}}")
+%foreign
+    (js """
+        time => {
+            var waitTill = new Date(new Date().getTime() + time)
+            while(waitTill > new Date()) {}
+        }
+    """)
 prim__jsSleep : Double -> PrimIO ()
 
 export
