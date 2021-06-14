@@ -45,7 +45,7 @@ public export
 record Config where
     constructor MkConfig
     -- Direct ipkg fields
-    package        : String -- Called name in ipkg
+    package        : String        -- Is called name in ipkg
     version        : String
     authors        : Maybe String
     maintainers    : Maybe String
@@ -56,10 +56,10 @@ record Config where
     sourceloc      : Maybe String
     bugtracker     : Maybe String
     depends        : List String
-    modules        : List String -- Can't be specified manually
+    modules        : List String   -- Can't be specified manually
     main           : Maybe String
     executable     : Maybe String
-    sourcedir      : String -- optional
+    sourcedir      : String        -- optional
     builddir       : Maybe String
     outputdir      : Maybe String
     prebuild       : Maybe String
@@ -69,10 +69,10 @@ record Config where
     preclean       : Maybe String
     postclean      : Maybe String
     -- Original fields
-    langVersion    : String -- Can't be specified manually
-    pkgsDir        : String -- Can't be specified manually
-    projectDir     : String -- Can't be specified manually
-    target         : String -- optional
+    langVersion    : String        -- Can't be specified manually
+    pkgsDir        : String        -- Can't be specified manually
+    projectDir     : String        -- Can't be specified manually
+    target         : String        -- optional
     ignoredModules : List String
     sources        : List Source
 

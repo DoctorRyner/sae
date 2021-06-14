@@ -16,43 +16,23 @@ import Sae.Utils
 import System.Directory
 import Js.System.File
 
-availableCommands : List Command
-availableCommands =
-    [ Help
-    , InstallDeps
-    , ReinstallDeps
-    , Build
-    , Install
-    , Release
-    , Repl
-    , Run []
-    , New ""
-    ]
-
-commandToString : Command -> String
-commandToString = \case
-    Help          => "help                  Show usage info"
-    GenerateIpkg  => "generate-ipkg         Generates ipkg file"
-    FetchDeps     => "fetch                 Fetch dependencies"
-    InstallDeps   => "install-deps          Install dependencies"
-    ReinstallDeps => "reinstall-deps        Forcibly reinstall dependencies"
-    Build         => "build                 Build project"
-    Install       => "install               Register package in the system"
-    Release       => "release               Compile project into a file"
-    Repl          => "repl                  Open REPL"
-    Run _         => "run                   Run compiled file"
-    New _         => "new                   Create a sae project"
-
 usageInfo : String
 usageInfo =
-    join "\n"
-        $ [ "sae — Idris 2 Build Tool" ++ " v" ++ version
-          , ""
-          , "Usage: sae [command] [arg*]"
-          , ""
-          , "Available commands:"
-          ]
-        ++ map (("  " ++) . commandToString) availableCommands
+"""
+sae — Idris 2 Build Tool v\{version}
+
+Usage: sae [command] [arg*]
+
+Available commands:
+  help                  Show usage info
+  install-deps          Install dependencies
+  reinstall-deps        Forcibly reinstall dependencies
+  build                 Build project
+  install               Register package in the system
+  release               Compile project into a file
+  repl                  Open REPL
+  new                   Create a sae project
+"""
 
 -- generate-ipkg
 
@@ -85,13 +65,12 @@ fetchSource depsDir cfg src = do
             then do
                 _ <- changeDir cloneDestination
                 if !(system changeVersionCmd) == 0
-                    then do
+                    then ignore $ do
                         -- when (elem cfg.target ["javascript", "node"] && !(doesFileExist "package.json")) $ do
                         --     yarnVersionCmdResult <- system "yarn --version"
                         --     system $ if yarnVersionCmdResult == 0 then "yarn" else "npm i"
                         --     pure ()
-                        _ <- changeDir ".."
-                        pure ()
+                        changeDir ".."
                     else failMsg $ "Couldn't switch to version: " ++ changeVersionCmd
             else failMsg $ "Cloning failed: " ++ cloneCmd
 
@@ -157,26 +136,28 @@ mutual
 -- new
 
 mkEqFile : String -> String
-mkEqFile projectName = join "\n"
-    [ "package: " ++ projectName
-    , "version: 0.0.1"
-    , ""
-    , "# depends:"
-    , "# - contrib"
-    , ""
-    , "# sources:"
-    , "# - name: some-package"
-    , "#   url: https://github.com/SomeAuthor/some-repository"
-    , "#   version: v0.0.1"
-    ]
+mkEqFile projectName =
+"""
+package: \{projectName}
+version: 0.0.1
+
+depends:
+# - contrib
+
+# sources:
+# - name: some-package
+#   url: https://github.com/SomeAuthor/some-repository
+#   version: v0.0.1
+"""
 
 basicMainFile : String
-basicMainFile = unlines
-    ["module Main"
-    , ""
-    , "main : IO ()"
-    , "main = putStrLn " ++ show "Now, I'm gonna solve all of the equations!"
-    ]
+basicMainFile =
+"""
+module Main
+
+main : IO ()
+main = putStrLn "Now, I'm gonna solve all of the equations!"
+"""
 
 new : String -> IO ()
 new projectName = do
@@ -185,7 +166,7 @@ new projectName = do
     _ <- createDir "src"
     _ <- writeFileFixed "Eq.yml" $ mkEqFile projectName
     _ <- writeFileFixed "src/Main.idr" basicMainFile
-    _ <- writeFileFixed ".gitignore" $ unlines ["deps/", "build/", "DS_Store", projectName ++ ".ipkg"]
+    _ <- writeFileFixed ".gitignore" $ unlines ["build/", "DS_Store", projectName ++ ".ipkg"]
     pure ()
 
 -- release
@@ -235,7 +216,10 @@ repl cfg = do
     installDeps False cfg
     _ <- changeDir initialDir
 
-    let idrisReplCmd = "idris2 --repl " ++ cfg.package ++ ".ipkg"
+    let idrisReplCmd =
+            """
+            idris2 --repl \{cfg.package}.ipkg
+            """
         rlwrapVersionCmdResult = !(systemStr "rlwrap --version")
         replCmd =
             if isRight rlwrapVersionCmdResult
