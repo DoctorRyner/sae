@@ -92,7 +92,7 @@ mutual
         _ <- changeDir folderName
         case !readConfig of
             Right cfg => do
-                let pkgName         = cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
+                let pkgName         = cfg.package ++ "-" ++ cfg.version
                     installedPkgDir = cfg.pkgsDir ++ "/" ++ pkgName
                 installDeps shouldRebuild cfg
                 _ <- changeDir folderName
@@ -180,7 +180,7 @@ release cfg = do
             [ "idris2"
             , cfg.sourcedir ++ "/Main.idr"
             , "--codegen " ++ cfg.target
-            , concatMap (" -p " ++) $ map replaceDotsWithDashes cfg.depends
+            , concatMap (" -p " ++) cfg.depends
             , "-o " ++ outputFileName
             ]
         releaseCmdResultCode = !(system releaseCmd)

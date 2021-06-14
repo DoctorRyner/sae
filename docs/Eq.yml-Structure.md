@@ -29,5 +29,5 @@ To add a dependency from a source, you need to specify a `package name` and a `v
 ```yaml
 depends:
 - contrib
-- package-name-0.0.1
+- package-name == 0.0.1
 ```

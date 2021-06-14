@@ -1,4 +1,5 @@
-package saeversion     = 0.0.2
+package sae
+version     = 0.0.2
 
 sourcedir   = "src"
 

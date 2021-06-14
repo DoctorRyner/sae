@@ -13,10 +13,6 @@ optField (name, Just x) = name ++ " = " ++ if name == "main       " then x else 
 optField _              = ""
 
 export
-replaceDotsWithDashes : String -> String
-replaceDotsWithDashes = pack . map (\x => if x == '.' then '_' else x) . unpack
-
-export
 configToIpkg : Config -> String
 configToIpkg cfg = concat
     [ "package " ++ cfg.package ++ "\n"
@@ -49,7 +45,7 @@ configToIpkg cfg = concat
     , "\n"
     , if length cfg.depends == 0 
       then ""
-      else "depends     = " ++ join "\n            , " (map replaceDotsWithDashes cfg.depends) ++ "\n\n"
+      else "depends     = " ++ join "\n            , " cfg.depends ++ "\n\n"
     , if length cfg.modules == 0
       then ""
       else "modules     = " ++ join "\n            , " cfg.modules
