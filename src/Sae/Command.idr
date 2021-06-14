@@ -141,7 +141,7 @@ mkEqFile projectName =
 package: \{projectName}
 version: 0.0.1
 
-depends:
+# depends:
 # - contrib
 
 # sources:
