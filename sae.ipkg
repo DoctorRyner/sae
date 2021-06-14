@@ -1,0 +1,25 @@
+package sae-0_0_2
+
+sourcedir   = "src"
+
+depends     = contrib
+
+modules     = Control.Monad.ExceptIO
+            , Js.Array
+            , Js.Console
+            , Js.Dom
+            , Js.FFI
+            , Js.Glob
+            , Js.Nullable
+            , Js.Object
+            , Js.System
+            , Js.System.File
+            , Js.Yaml
+            , Main
+            , Sae.ArgsParser
+            , Sae.Command
+            , Sae.Config
+            , Sae.Info
+            , Sae.Ipkg
+            , Sae.Types
+            , Sae.Utils
