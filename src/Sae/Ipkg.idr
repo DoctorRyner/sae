@@ -19,7 +19,8 @@ replaceDotsWithDashes = pack . map (\x => if x == '.' then '_' else x) . unpack
 export
 configToIpkg : Config -> String
 configToIpkg cfg = concat
-    [ "package " ++ cfg.package ++ "-" ++ replaceDotsWithDashes cfg.version
+    [ "package " ++ cfg.package
+    , "version     = " ++ cfg.version 
     , "\n\n"
     , "sourcedir   = " ++ show cfg.sourcedir ++ "\n"
     , let fields = filter (/= "") $ map optField

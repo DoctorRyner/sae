@@ -45,7 +45,7 @@ public export
 record Config where
     constructor MkConfig
     -- Direct ipkg fields
-    package        : String        -- Is called name in ipkg
+    package        : String
     version        : String
     authors        : Maybe String
     maintainers    : Maybe String
