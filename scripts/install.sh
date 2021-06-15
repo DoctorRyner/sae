@@ -4,6 +4,7 @@ set -u -e
 # Installator
 
 OS="$(uname)"
+ARCH="$(uname -m)"
 
 if [ "$OS" != "Linux" ] && [ "$OS" != "Darwin" ]; then
     echo "This sae installer works only on macOS and Linux"
@@ -11,8 +12,10 @@ if [ "$OS" != "Linux" ] && [ "$OS" != "Darwin" ]; then
 fi
 
 SAE_URL=$([ "$OS" == "Darwin" ] \
-            && echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-mac.zip" \
-            || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix1/sae-linux.zip")
+            && ([ "$ARCH" == "arm64" ] \
+                && echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-apple-silicon.zip"
+                || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-mac.zip") \
+            || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-linux.zip")
 
 curl -L "$SAE_URL" > sae.zip
 unzip sae.zip
