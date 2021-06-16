@@ -27,4 +27,4 @@ else
     sudo mv sae /usr/local/bin/sae
 fi
 
-printf "\nSuccess! Type 'sae help' to get started"
+printf "\nSuccess! Type 'sae help' to get started\n"
