@@ -22,7 +22,7 @@ Or go to [releases](https://github.com/DoctorRyner/sae/releases) and place an ex
 
 Then you can type `sae help` to see a brief usage info, for more information on `sae` check out [Eq.yml structure](docs/Eq.yml-Structure.md) and [Usage](docs/Usage.md)
 
-If you develop for JS backends then you may want to have `yarn` installed, you can do it with this command
+If you develop for JS backends then you may want to have `yarn` installed, you can install it with this command
 ```bash
 npm i -g yarn
 ```
