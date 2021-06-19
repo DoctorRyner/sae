@@ -14,6 +14,7 @@ argsToCommand = \case
     "install"       ::_    => Install
     "release"       ::_    => Release
     "repl"          ::_    => Repl
+    "yarn"          ::_    => Yarn
     "run"           ::xs   => Run xs
     "new"           ::x::_ => New x
     _                      => Help

@@ -19,6 +19,7 @@ data Command
     | Repl
     | Run (List String)
     | New String
+    | Yarn
 
 -- Config
 

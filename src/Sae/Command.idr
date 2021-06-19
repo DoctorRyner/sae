@@ -228,6 +228,11 @@ repl cfg = do
     _ <- system replCmd
     pure ()
 
+-- yarn
+
+yarn : Config -> IO ()
+yarn _ = pure ()
+
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg
 evalCommand cfg FetchDeps     = fetchDeps cfg
@@ -238,7 +243,9 @@ evalCommand cfg Install       = install cfg
 evalCommand cfg Release       = release cfg
 evalCommand cfg Repl          = repl cfg
 evalCommand cfg (Run args)    = run args cfg
-evalCommand _   _             = failMsg "Impossible happened, there is an unhandled case in the runCommand function"
+evalCommand cfg Yarn          = yarn cfg
+evalCommand _   Help          = failMsg "Impossible happened, this command should be handled by the runCommand function"
+evalCommand _   (New _)       = failMsg "Impossible happened, this command should be handled by the runCommand function"
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
 evalConfig _ (Left configError) = failMsg $ configErrorToString configError
