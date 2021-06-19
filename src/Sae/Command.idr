@@ -216,10 +216,7 @@ repl cfg = do
     installDeps False cfg
     _ <- changeDir initialDir
 
-    let idrisReplCmd =
-            """
-            idris2 --repl \{cfg.package}.ipkg
-            """
+    let idrisReplCmd = "idris2 --repl \{cfg.package}.ipkg"
         rlwrapVersionCmdResult = !(systemStr "rlwrap --version")
         replCmd =
             if isRight rlwrapVersionCmdResult

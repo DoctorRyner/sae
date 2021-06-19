@@ -2,6 +2,8 @@
 
 Idris 2 build tool, manage packages and projects with ease!
 
+sae tested with — `Idris 2, version 0.3.0-40fa9b43a`, it may not work on previous versions due to idris' compiler changes
+
 ##### Table of Contents
 - [Install](#install)
 - [Examples](#examples)

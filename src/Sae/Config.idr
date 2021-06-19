@@ -162,6 +162,8 @@ parseConfig xs = do
         preclean       = optStringField "preclean" xs
         postclean      = optStringField "postclean" xs
         target         = fromMaybe "chez" $ optStringField "target" xs
+        -- Here happenes an idris 2 version processing
+        -- We need to get 'x.x.x' from 'Idris 2, version x.x.x-xxxxxxxxx'
         langVersion    =
             pack $
             take 5 $
