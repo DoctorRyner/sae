@@ -13,9 +13,9 @@ fi
 
 SAE_URL=$([ "$OS" == "Darwin" ] \
             && ([ "$ARCH" == "arm64" ] \
-                && echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-apple-silicon.zip" \
-                || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-mac.zip") \
-            || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.2-fix2/sae-linux.zip")
+                && echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.3-preview/sae-apple-silicon.zip" \
+                || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.3-preview/sae-mac.zip") \
+            || echo "https://github.com/DoctorRyner/sae/releases/download/v0.0.3-preview/sae-linux.zip")
 
 curl -L "$SAE_URL" > sae.zip
 unzip sae.zip

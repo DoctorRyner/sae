@@ -59,3 +59,9 @@ Doest the same as `sae install-deps` but forcibly reinstalls every package. This
 Example: `sae install`
 
 Installs package in the system, this is also rarely needed since you are supposed to install packages through `sae`'s `sources` field
+
+## yarn
+
+Example: `sae yarn`
+
+Build project, resolves npm dependencies (creates build/package.json) and installs npm dependencies
