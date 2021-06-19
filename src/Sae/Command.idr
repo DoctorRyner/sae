@@ -28,6 +28,7 @@ Available commands:
   install-deps          Install dependencies
   reinstall-deps        Forcibly reinstall dependencies
   build                 Build project
+  yarn                  Build project and resolve npm dependencies
   install               Register package in the system
   release               Compile project into a file
   repl                  Open REPL
@@ -60,7 +61,6 @@ fetchSource depsDir cfg src = do
     _ <- changeDir cfg.projectDir
 
     when (not !(doesFileExist cloneDestination)) $ do
-        putStrLn "Should be wasted clonning"
         if !(system cloneCmd) == 0
             then do
                 _ <- changeDir cloneDestination
@@ -231,7 +231,11 @@ repl cfg = do
 -- yarn
 
 yarn : Config -> IO ()
-yarn _ = pure ()
+yarn cfg =
+    if cfg.target `elem` ["node", "javascript"]
+    then do
+        build cfg
+    else failMsg "yarn isn't supported for \{cfg.target} target, use node or javascript"
 
 evalCommand : Config -> Command -> IO ()
 evalCommand cfg GenerateIpkg  = generateIpkg cfg

@@ -164,7 +164,7 @@ parseConfig xs = do
         target         = fromMaybe "chez" $ optStringField "target" xs
         -- Here happenes an idris 2 version processing
         -- We need to get 'x.x.x' from 'Idris 2, version x.x.x-xxxxxxxxx'
-        langVersion    =
+        langVersion =
             pack $
             take 5 $
             drop 17 $
@@ -174,12 +174,17 @@ parseConfig xs = do
                     (const "Idris 2, version 0.3.0")
                     id
                     <$> systemStr "idris2 --version")
-        pkgsDir        = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
-        projectDir     = case !(primIO currentDir) of
+        pkgsDir = !(primIO getHomeDir) ++ "/.idris2/idris2-" ++ langVersion
+        projectDir = case !(primIO currentDir) of
             Just dir => dir
             Nothing => ""
         ignoredModules = stringArrayField "ignoredModules" xs
-        sources        = !(sourcesField xs)
+        dependsWithoutVersions =
+            map (pack . takeWhile (\c => c /= ' ' && c /= '<' && c /= '>' && c /= '=') . unpack)
+                depends
+        sources =
+            filter (\src => src.name `elem` dependsWithoutVersions)
+                   !(sourcesField xs)
 
         refineModuleString : String -> String
         refineModuleString xs =
