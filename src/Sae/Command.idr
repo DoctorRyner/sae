@@ -8,13 +8,13 @@ import Data.List
 import Js.Console
 import Js.Glob
 import Js.System
+import Js.System.File
 import Sae.Config
 import Sae.Info
 import Sae.Ipkg
 import Sae.Types
 import Sae.Utils
 import System.Directory
-import Js.System.File
 
 usageInfo : String
 usageInfo =
@@ -187,7 +187,10 @@ release cfg = do
         projectPath = fromMaybe "" !currentDir
         outputMsg =
             if releaseCmdResultCode == 0
-            then Right $ "Compiled: " ++ projectPath ++ (fromMaybe "/build" cfg.builddir) ++ "/exec/" ++ outputFileName
+            then Right $ "Compiled: " 
+                      ++ projectPath
+                      ++ (fromMaybe "/build" cfg.builddir)
+                      ++ "/exec/" ++ outputFileName
             else Left $ "ERROR(" ++ show releaseCmdResultCode ++ "): Couldn't built " ++ cfg.package
 
     either failMsg putStrLn outputMsg
@@ -230,33 +233,62 @@ repl cfg = do
 
 -- yarn
 
+createMergedPackageJson : String -> Config -> IO ()
+createMergedPackageJson initialDir cfg = do
+    let saeDir      = !getHomeDir ++ "/.sae/"
+        depsRootDir = saeDir ++ "deps/"
+        depsDir     = depsRootDir ++ "idris-" ++ cfg.langVersion ++ "/"
+        depsPaths   =
+            map (\src => depsDir ++ src.name ++ "-" ++ src.version ++ "/package.json")
+                cfg.sources
+    
+    jsDepsPaths <-
+        traverse
+            (\path => pure (path, !(doesFileExist path)))
+            depsPaths
+
+    let verifiedPackageJsonPaths = map fst $ filter snd jsDepsPaths
+
+    case !(readFileFixed "\{initialDir}/package.json") of
+        Left err => pure ()
+        Right basePackageJson => do
+            _ <- changeDir initialDir
+            _ <- system "yarn"
+            _ <- system $ "npx package-json-merge package.json "
+                       ++ join " " verifiedPackageJsonPaths
+                       ++ " > build/package.json"
+            _ <- system "cd build && yarn --production"
+            pure ()
+
 yarn : Config -> IO ()
 yarn cfg =
     if cfg.target `elem` ["node", "javascript"]
     then do
+        initialDir <- fromMaybe "" <$> currentDir
         build cfg
+        createMergedPackageJson initialDir cfg
     else failMsg "yarn isn't supported for \{cfg.target} target, use node or javascript"
 
 evalCommand : Config -> Command -> IO ()
-evalCommand cfg GenerateIpkg  = generateIpkg cfg
-evalCommand cfg FetchDeps     = fetchDeps cfg
-evalCommand cfg InstallDeps   = installDeps False cfg
-evalCommand cfg ReinstallDeps = installDeps True cfg
-evalCommand cfg Build         = build cfg
-evalCommand cfg Install       = install cfg
-evalCommand cfg Release       = release cfg
-evalCommand cfg Repl          = repl cfg
-evalCommand cfg (Run args)    = run args cfg
-evalCommand cfg Yarn          = yarn cfg
-evalCommand _   Help          = failMsg "Impossible happened, this command should be handled by the runCommand function"
-evalCommand _   (New _)       = failMsg "Impossible happened, this command should be handled by the runCommand function"
+evalCommand cfg  GenerateIpkg  = generateIpkg cfg
+evalCommand cfg  FetchDeps     = fetchDeps cfg
+evalCommand cfg  InstallDeps   = installDeps False cfg
+evalCommand cfg  ReinstallDeps = installDeps True cfg
+evalCommand cfg  Build         = build cfg
+evalCommand cfg  Install       = install cfg
+evalCommand cfg  Release       = release cfg
+evalCommand cfg  Repl          = repl cfg
+evalCommand cfg (Run args)     = run args cfg
+evalCommand cfg  Yarn          = yarn cfg
+evalCommand _    Help          = failMsg "help command should be handled by the runCommand function"
+evalCommand _   (New _)        = failMsg "new command should be handled by the runCommand function"
 
 evalConfig : Command -> Either ConfigError Config -> IO ()
-evalConfig _ (Left configError) = failMsg $ configErrorToString configError
-evalConfig cmd (Right cfg) = evalCommand cfg cmd
+evalConfig _   (Left configError) = failMsg $ configErrorToString configError
+evalConfig cmd (Right cfg)        = evalCommand cfg cmd
 
 export
 runCommand : Command -> IO ()
-runCommand Help = log usageInfo
+runCommand Help              = log usageInfo
 runCommand (New projectName) = new projectName
-runCommand cmd = evalConfig cmd !readConfig
+runCommand cmd               = evalConfig cmd !readConfig
