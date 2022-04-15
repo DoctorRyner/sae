@@ -35,7 +35,7 @@ writeFileFixed : String -> String -> IO (Either String ())
 writeFileFixed path content =
     if !isWindows
     then writeFileWindowsCompatible path content
-    else pure $ case !(System.File.writeFile path content) of
+    else pure $ case !(System.File.ReadWrite.writeFile path content) of
         Left err => Left $ show err
         Right x  => Right x
 
@@ -63,6 +63,6 @@ readFileFixed : String -> IO (Either String String)
 readFileFixed path =
     if !isWindows
     then readFileWindowsCompatible path
-    else pure $ case !(System.File.readFile path) of
+    else pure $ case !(System.File.ReadWrite.readFile path) of
         Left err => Left $ show err
         Right x  => Right x

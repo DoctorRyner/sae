@@ -19,7 +19,7 @@ import System.Directory
 usageInfo : String
 usageInfo =
 """
-sae — Idris 2 Build Tool v\{version}
+sae — Idris 2 Build Tool v\{Sae.Info.version}
 
 Usage: sae [command] [arg*]
 
