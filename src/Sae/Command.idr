@@ -254,7 +254,7 @@ createMergedPackageJson initialDir cfg = do
         Right basePackageJson => do
             _ <- changeDir initialDir
             _ <- system "yarn"
-            _ <- system $ "npx package-json-merge package.json "
+            _ <- system $ "npx --yes package-json-merge package.json "
                        ++ join " " verifiedPackageJsonPaths
                        ++ " > build/package.json"
             _ <- system "cd build && yarn --production"

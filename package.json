@@ -13,9 +13,9 @@
   },
   "scripts": {
     "mk-exe": "sae release && pkg . --target nodev16-macos-x64,nodev14-linux-x64,nodev14-win-x64 --out-path build/",
-    "install-mac": "sae release && pkg . --target nodev16-macos-x64 --out-path /usr/local/bin/",
-    "install-mac-m1": "sae release && pkg . --target nodev16-macos-arm64 --out-path /usr/local/bin/",
-    "install-linux": "sae release && pkg . --target nodev14-linux-x64 --out-path build/ && sudo cp build/sae /usr/local/bin/"
+    "install-mac": "sae release && pkg . --target nodev16-macos-x64 && sudo mv ./sae /usr/local/bin",
+    "install-mac-m1": "sae release && pkg . --target nodev16-macos-arm64 && sudo mv ./sae /usr/local/bin",
+    "install-linux": "sae release && pkg . --target nodev14-linux-x64 && sudo mv ./sae /usr/local/bin"
   },
   "dependencies": {
     "glob": "^7.1.7",
